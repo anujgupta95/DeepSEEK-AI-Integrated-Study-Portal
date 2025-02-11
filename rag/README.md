@@ -35,4 +35,47 @@ Gemma Model Document Q&A is a Streamlit-based application that lets users ask qu
 
 1. **Clone the Repository:**
 
+2. **Create and Activate a Virtual Environment:**
+
+
+3. **Install the Dependencies:**
+
+
+4. **Setup Environment Variables:**
+
+Create a `.env` file in the project root with the following content:
+
+
+## Usage
+
+1. **Add Your PDF Files:**  
+Place all your PDFs inside the `pdf_files` folder.
+
+2. **Run the App:**
+
+
+3. **Interacting with the App:**  
+- Enter your question or query into the provided text input.
+- Use the radio options to select between **"Search Documents"** and **"Search the Internet"**.
+  - **Search Documents:** Retrieves context from your uploaded PDFs and generates answers using the language model.
+  - **Search the Internet:** Performs a web search using Google Custom Search and displays relevant articles and resource links.
+- The assistant, **Alfred**, will respond with detailed answers or search results accordingly.
+
+## Code Overview
+
+- **app.py:**  
+- Loads environment variables.
+- Builds a document vector database from PDFs using LangChain's FAISS integration.
+- Configures a language model (ChatGroq) with a custom prompt instructing the assistant to respond as Alfred.
+- Implements web search integration using the Google Custom Search JSON API.
+- Provides an interactive UI using Streamlit for user input and display of responses.
+
+## Contributing
+
+Contributions and feedback are welcome. Feel free to fork the repository and submit pull requests with improvements or new features.
+
+## License
+
+This project is licensed under the MIT License.
+
 
