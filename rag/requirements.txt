@@ -9,3 +9,7 @@ langchain_community
 python-dotenv
 pypdf
 requests
+fastapi
+uvicorn
+requests
+python-dotenv
