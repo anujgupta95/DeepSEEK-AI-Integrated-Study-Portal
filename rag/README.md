@@ -78,7 +78,7 @@ For production deployments, you might consider using a managed vector database, 
 This project is licensed under the MIT License.
 
 
-##Jalaj and Anuj is Boss.
+## Jalaj and Anuj is Boss.
 
 ---
 
