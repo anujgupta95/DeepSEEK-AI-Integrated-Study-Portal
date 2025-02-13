@@ -34,6 +34,7 @@ DeepSEEK Portal is a Retrieval-Augmented Generation (RAG) application built usin
 
 
 2. **Using the App:**
+3. 'Jalaj and Anuj is boss'
 
 - **Normal Query:**  
   Enter your question or query in the text input field. The system retrieves relevant document context from the pre-built FAISS index and generates an answer.
