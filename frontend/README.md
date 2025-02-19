@@ -1,4 +1,3 @@
-```md
 # 🌟 Deepseek - Seek Portal AI Agent (Frontend) 🌟
 
 Welcome to the **Deepseek - Seek Portal AI Agent** frontend repository! 🚀  
@@ -26,7 +25,7 @@ You can either use the above link to access the portal or follow the steps below
 ### 1️⃣ Clone the Repository  
 ```sh
 git clone https://github.com/21f3002975/seek-portal-ai-agent.git
-cd frontend
+cd seek-portal-ai-agent/frontend
 ```
 
 ### 2️⃣ Install Dependencies  
