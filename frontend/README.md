@@ -1,14 +1,7 @@
 # 🌟 Deepseek - Seek Portal AI Agent (Frontend) 🌟
 
-Welcome to the **Deepseek - Seek Portal AI Agent** frontend repository! 🚀  
-This is the frontend part of our project, built with **React + Vite** for a fast and efficient user experience.
-
-## 🌍 Live Demo  
-🔗 [Access the application here](https://deepseek-fe.vercel.app/)  
-
-You can either use the above link to access the portal or follow the steps below to run it locally.
-
----
+Welcome to the **DeepSEEK - Seek Portal AI Agent** frontend repository! 🚀  
+This is the frontend of our project, built with **React + Vite** for a smooth, quick and user friendly experience.
 
 ## 🛠️ Tech Stack  
 - **React** ⚛️ - Component-based UI  
@@ -16,11 +9,25 @@ You can either use the above link to access the portal or follow the steps below
 - **TailwindCSS** 🎨 - Modern styling  
 - **ShadCN** 🏗️ - UI components  
 - **React Router** 🌍 - Navigation  
-- **Google OAuth** 🔑 - Authentication  
+- **Google OAuth** 🔑 - Authentication
+  
+---
+
+## **There are two options to access the frontend:**
+
+- **Option 1:** via a live demo of the frontend on Vercel  
+- **Option 2:** via running the code locally   
+     
+## 🌍 Option 1 - Live Demo  
+🔗 [Access the application here](https://deepseek-fe.vercel.app/)  
+
+You can either use the above link to access the portal or follow the steps below to run it locally.
 
 ---
 
-## 🚀 Getting Started (Run Locally)  
+## Option 2 - Run Locally
+
+### 🚀 Getting Started
 
 ### 1️⃣ Clone the Repository  
 ```sh
