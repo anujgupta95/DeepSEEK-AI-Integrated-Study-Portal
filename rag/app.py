@@ -3,6 +3,7 @@ import os
 import time
 import json
 from dotenv import load_dotenv
+import urllib.parse
 
 # Use the new recommended imports
 from langchain_community.vectorstores import FAISS
@@ -134,6 +135,8 @@ if user_query:
         st.write(f"Response Time: {elapsed_time:.2f} seconds")
         st.write(f"Alfred: {response['answer']}")
         
+        
+        
         # Optionally display detailed document similarity search info
         with st.expander("Document Similarity Search Details"):
             if "context" in response and response["context"]:
@@ -151,3 +154,29 @@ if user_query:
         history = load_chat_history()
         history.append({"query": user_query, "answer": response["answer"]})
         save_chat_history(history)
+        
+         # Add sharing options
+        # st.markdown("Share with your Peers:")
+        # encoded_answer = urllib.parse.quote(response['answer'])
+        # whatsapp_url = f"https://api.whatsapp.com/send?text={encoded_answer}"
+        # mailto_url = f"mailto:?subject=Answer to your question&body={encoded_answer}"
+        # st.markdown(f'<a href="{whatsapp_url}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20"/> Share via WhatsApp</a>', unsafe_allow_html=True)
+        # st.markdown(f'<a href="{mailto_url}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/Circle-icons-mail.svg" width="20"/> Share via Mail </a>', unsafe_allow_html=True)
+        # st.markdown("---")
+        
+        
+        
+        # Add sharing options
+        st.markdown("Share with your Peers:")
+        share_text = f"Question: {user_query}\nAnswer: {response['answer']}"
+        encoded_text = urllib.parse.quote(share_text)
+        whatsapp_url = f"https://api.whatsapp.com/send?text={encoded_text}"
+        mailto_url = f"mailto:?subject=Question and Answer&body={encoded_text}"
+        st.markdown(f'<a href="{whatsapp_url}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20"/> Share via WhatsApp</a>', unsafe_allow_html=True)
+        st.markdown(f'<a href="{mailto_url}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/e/ec/Circle-icons-mail.svg" width="20"/> Share via Mail </a>', unsafe_allow_html=True)
+        st.markdown("---")
+
+
+        
+        
+        
