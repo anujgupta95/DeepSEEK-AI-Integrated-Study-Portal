@@ -11,6 +11,7 @@ import Course from "@/pages/Course";
 import CourseContent from "@/pages/CourseContent";
 import Registration from "@/pages/Registration";
 import Users from "@/pages/Users";
+import UserPage from "@/pages/UserPage";
 
 function ProtectedRoute({ element }) {
   const { profile } = useUser();
@@ -28,6 +29,7 @@ export default function App() {
           <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
           <Route path="/course" element={<ProtectedRoute element={<Course />} />} />
           <Route path="/users" element={<ProtectedRoute element={<Users />} />} />
+          <Route path="/user/:userId" element={<ProtectedRoute element={<UserPage />} />} />
           <Route path="/course/:courseId" element={<ProtectedRoute element={<CourseContent />} />} />
           <Route path="/registration" element={<ProtectedRoute element={<Registration />} />} />
         </Routes>

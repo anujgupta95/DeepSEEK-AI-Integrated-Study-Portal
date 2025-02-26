@@ -8,9 +8,11 @@ import { MdLightMode, MdDarkMode } from "react-icons/md";
 import { Button } from "@/components/ui/button";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 
-export default function CodeEditor({ module }) {
+export default function CodeEditor({ module, deadline, isGraded }) {
+  const formattedDeadline = deadline ? new Date(deadline).toLocaleString() : "No deadline provided";
   const [code, setCode] = useState(module.codeTemplate);
-  const [isDarkMode, setIsDarkMode] = useState(true); // Mode
+  const [isDarkMode, setIsDarkMode] = useState(true); // Theme mode
+  const [showHint, setShowHint] = useState(false); // State to toggle hint
 
   // Function to toggle theme
   const toggleTheme = () => {
@@ -19,6 +21,7 @@ export default function CodeEditor({ module }) {
 
   return (
     <div className="relative w-full pb-9">
+      <h3 className="font-semibold">Deadline: {formattedDeadline}</h3>
       <div className="flex justify-between items-end">
         <p className="text-gray-700">{module.description}</p>
 
@@ -44,9 +47,20 @@ export default function CodeEditor({ module }) {
 
       {/* Buttons Section */}
       <div className="flex justify-end gap-4 mt-4">
+        <Button variant="secondary" onClick={() => setShowHint(!showHint)}>
+          {showHint ? "Hide Hint" : "Show Hint"}
+        </Button>
+        <Button variant="outline">Debug</Button>
         <Button variant="outline">Test Run</Button>
         <Button variant="default">Submit</Button>
       </div>
+
+      {/* Hint Section */}
+      {showHint && (
+        <div className="mt-4 p-3 bg-blue-100 border-l-4 border-blue-500 rounded-md">
+          <p className="text-blue-700 text-sm">💡 Hint: {module.hint || "No hint available."}</p>
+        </div>
+      )}
 
       {/* Test Cases Section */}
       <div className="mt-6">

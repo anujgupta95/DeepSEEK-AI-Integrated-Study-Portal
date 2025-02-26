@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { MdOutlineKeyboardArrowDown, MdOutlineKeyboardArrowUp } from "react-icons/md";
 import CodeEditor from "@/components/Course/CodeEditor";
 import Video from "@/components/Course/Video";
@@ -7,27 +7,19 @@ import Assignment from "@/components/Course/Assignment";
 import ChatBot from "@/components/Course/ChatBot";
 import axios from "axios";
 
-const apiUrl = import.meta.env.VITE_API_URL
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function CourseContent() {
   const { courseId } = useParams();
   const [searchParams] = useSearchParams();
-
-  const initialWeekIndex = searchParams.get("weekIndex");
-  const initialModuleIndex = searchParams.get("moduleIndex");
+  const moduleIdFromURL = searchParams.get("moduleId");
+  const navigate = useNavigate();
 
   const [courseData, setCourseData] = useState(null);
-  const [selectedWeekIndex, setSelectedWeekIndex] = useState(
-    initialWeekIndex !== null ? parseInt(initialWeekIndex) : null
-  );
-  const [selectedModuleIndex, setSelectedModuleIndex] = useState(
-    initialModuleIndex !== null ? parseInt(initialModuleIndex) : null
-  );
-
-  const selectedWeek = selectedWeekIndex !== null ? courseData?.weeks[selectedWeekIndex] : null;
-  const selectedModule = selectedWeek && selectedWeek.modules.length > 0
-    ? selectedWeek.modules[selectedModuleIndex]
-    : null;
+  const [selectedModule, setSelectedModule] = useState(null);
+  const [selectedWeek, setSelectedWeek] = useState(null);
+  const [chatbotWidth, setChatbotWidth] = useState(350);
+  const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
     async function fetchCourseData() {
@@ -40,40 +32,68 @@ export default function CourseContent() {
     }
 
     fetchCourseData();
-    // setCourseData(courseDataStatic);
   }, [courseId]);
 
-  if (!courseData) {
-    return <div className="text-center text-lg">Loading Course Data...</div>;
-  }
+  useEffect(() => {
+    if (!courseData || !moduleIdFromURL) return;
+
+    let foundModule = null;
+    for (const week of courseData.weeks) {
+      foundModule = week.modules.find((mod) => mod.moduleId === moduleIdFromURL);
+      if (foundModule) break;
+    }
+
+    setSelectedModule(foundModule);
+  }, [courseData, moduleIdFromURL]);
+
+  useEffect(() => {
+    if (!isResizing) return;
+    
+    const handleMouseMove = (e) => {
+      const newWidth = window.innerWidth - e.clientX;
+      if (newWidth >= 250 && newWidth <= 600) {
+        setChatbotWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => setIsResizing(false);
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+
+    return () => {
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [isResizing]);
+
+  if (!courseData) return <div className="text-center text-lg">Loading Course Data...</div>;
 
   return (
     <div className="flex h-[calc(100vh-95px)] bg-gray-100">
       {/* Sidebar */}
       <div className="w-1/5 bg-white border-r overflow-y-auto">
         <div className="p-4 border-b">
-          <h1 className="text-lg font-bold">{courseData.title}</h1>
+          <h1 className="text-lg font-bold">{courseData.name}</h1>
         </div>
-        {courseData.weeks.map((week, weekIndex) => (
-          <div key={weekIndex}>
+        {courseData.weeks.map((week) => (
+          <div key={week.weekId}>
             <button
-              onClick={() => setSelectedWeekIndex(weekIndex === selectedWeekIndex ? null : weekIndex)}
-              className={`w-full text-left p-3 transition ${
-                selectedWeekIndex === weekIndex ? "bg-gray-200 font-semibold" : ""
-              }`}
+              onClick={() => setSelectedWeek(week === selectedWeek ? null : week)}
+              className={`w-full text-left p-3 transition ${selectedWeek === week ? "bg-gray-200 font-semibold" : ""}`}
             >
               {week.title}
               <span className="float-right">
-                {selectedWeekIndex === weekIndex ? <MdOutlineKeyboardArrowUp /> : <MdOutlineKeyboardArrowDown />}
+                {selectedWeek === week ? <MdOutlineKeyboardArrowUp /> : <MdOutlineKeyboardArrowDown />}
               </span>
             </button>
-            {selectedWeekIndex === weekIndex &&
-              week.modules.map((module, moduleIndex) => (
+            {selectedWeek === week &&
+              week.modules.map((module) => (
                 <button
-                  key={moduleIndex}
-                  onClick={() => setSelectedModuleIndex(moduleIndex)}
-                  className={`w-full text-left pl-6 py-2 ${
-                    selectedModuleIndex === moduleIndex ? "bg-gray-300 font-medium" : ""
+                  key={module.moduleId}
+                  onClick={() => navigate(`?moduleId=${module.moduleId}`)}
+                  className={`block text-left pl-6 py-2 w-full ${
+                    selectedModule?.moduleId === module.moduleId ? "bg-gray-300 font-medium" : ""
                   }`}
                 >
                   {module.title}
@@ -89,27 +109,29 @@ export default function CourseContent() {
           <>
             <h2 className="text-xl font-bold mb-4">{selectedModule.title}</h2>
             {selectedModule.type === "video" && <Video module={selectedModule} />}
-            {selectedModule.type === "coding" && <CodeEditor module={selectedModule} />}
-            {selectedModule.type === "assignment" && <Assignment module={selectedModule} />}
+            {selectedModule.type === "coding" && <CodeEditor module={selectedModule} deadline={selectedWeek?.deadline} isGraded={selectedModule.graded} />}
+            {selectedModule.type === "assignment" && (
+              <Assignment module={selectedModule} deadline={selectedWeek?.deadline} isGraded={selectedModule.graded} />
+            )}
+
             {selectedModule.type === "document" && (
-              <iframe
-                src={selectedModule.url}
-                width="100%"
-                height="600px"
-                style={{ border: "none" }}
-              ></iframe>
+              <iframe src={selectedModule.url} width="100%" height="600px" style={{ border: "none" }}></iframe>
             )}
           </>
         ) : (
           <>
-            <h2 className="text-xl font-bold mb-4">About the course</h2>
+            <h2 className="text-xl font-bold mb-4">About the Course</h2>
             <p>{courseData.description}</p>
           </>
         )}
       </div>
 
-      {/* Chatbot */}
-      <div className="w-1/4 bg-white border-l overflow-y-auto h-[89vh]">
+      {/* Resizable Chatbot Panel */}
+      <div
+        style={{ width: `${chatbotWidth}px` }}
+        className="relative bg-white overflow-y-auto h-[89vh]"
+      >
+        <div onMouseDown={() => setIsResizing(true)} className="absolute left-0 top-0 h-full w-1 bg-gray-200 cursor-ew-resize" />
         <ChatBot />
       </div>
     </div>

@@ -1,21 +1,24 @@
 import React, { useState } from "react";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
-export default function Assignment({ module }) {
-  const deadline = new Date(module.deadline).toLocaleString();
+export default function Assignment({ module, deadline, isGraded }) {
+  const formattedDeadline = deadline ? new Date(deadline).toLocaleString() : "No deadline provided";
   const [userAnswers, setUserAnswers] = useState({});
   const [showResults, setShowResults] = useState(false);
+  const [showHintIndex, setShowHintIndex] = useState(null); // Track which hint is shown
+  const [showAnswerIndex, setShowAnswerIndex] = useState(null); // Track which answer is shown
 
   // Handle answer selection for MCQ & MSQ
   const handleAnswerChange = (questionIndex, value, isMultiSelect = false) => {
     setUserAnswers((prev) => {
       if (isMultiSelect) {
         const updatedAnswers = prev[questionIndex] ? [...prev[questionIndex]] : [];
-        if (updatedAnswers.includes(value)) {
-          return { ...prev, [questionIndex]: updatedAnswers.filter((v) => v !== value) };
-        } else {
-          return { ...prev, [questionIndex]: [...updatedAnswers, value] };
-        }
+        return {
+          ...prev,
+          [questionIndex]: updatedAnswers.includes(value)
+            ? updatedAnswers.filter((v) => v !== value)
+            : [...updatedAnswers, value],
+        };
       } else {
         return { ...prev, [questionIndex]: value };
       }
@@ -32,16 +35,27 @@ export default function Assignment({ module }) {
     setShowResults(true);
   };
 
+  // Show hint for a specific question
+  const showHint = (index) => {
+    setShowHintIndex(index);
+  };
+
+  // Show correct answer for a specific question
+  const showAnswer = (index) => {
+    setShowAnswerIndex(index);
+  };
+
   return (
     <div>
       {/* Display Deadline */}
-      <h3 className="font-semibold">Deadline: {deadline}</h3>
+      <h3 className="font-semibold">Deadline: {formattedDeadline}</h3>
 
       <h4 className="font-medium mt-4">Quiz Questions:</h4>
 
       {module.questions.map((question, index) => {
         const userAnswer = userAnswers[index] || "";
         const correctAnswer = question.correctAnswer;
+        const hint = question.hint || null; // Use null if no hint provided
         let isCorrect = false;
 
         // Check correctness for different question types
@@ -101,10 +115,33 @@ export default function Assignment({ module }) {
             )}
 
             {/* Show Results After Checking */}
-            {showResults && (
+            {showResults && !isGraded && (
               <p className={`mt-2 text-sm font-semibold ${isCorrect ? "text-green-500" : "text-red-500"}`}>
-                {isCorrect ? "✅ Correct!" : `❌ Incorrect. Correct answer: ${correctAnswer}`}
+                {isCorrect ? "✅ Correct!" : "❌ Incorrect."}
               </p>
+            )}
+
+            {/* Show Hint Button or Message */}
+            {showResults && !isCorrect && !isGraded && (
+              <div className="mt-2">
+                {showHintIndex === index ? (
+                  <p className="text-blue-500 text-sm">💡 
+                    {hint ? ` Hint: ${hint}` : " No hint available"}
+                  </p>
+                ) : (
+                  <Button className="text-xs p-2" onClick={() => showHint(index)}>Show Hint</Button>
+                )}
+
+                {/* Show Answer Button */}
+                {showHintIndex === index && showAnswerIndex !== index && (
+                  <Button className="text-xs p-2 ml-2" onClick={() => showAnswer(index)}>Show Answer</Button>
+                )}
+
+                {/* Show Correct Answer */}
+                {showAnswerIndex === index && (
+                  <p className="text-green-500 text-sm mt-2">✅ Correct Answer: {Array.isArray(correctAnswer) ? correctAnswer.join(", ") : correctAnswer}</p>
+                )}
+              </div>
             )}
           </div>
         );
@@ -112,11 +149,11 @@ export default function Assignment({ module }) {
 
       {/* Conditional Button */}
       <div className="mt-4">
-        {!module.isGraded && (
+        {!isGraded && (
           <Button onClick={checkAnswers} variant="default">Check Answers</Button>
         )}
-        {module.isGraded && (
-          <Button variant="default">Submit Answers</Button>
+        {isGraded && (
+          <Button variant="default" onClick={() => {alert("Your submission is successful.")}}>Submit Answers</Button>
         )}
       </div>
     </div>
