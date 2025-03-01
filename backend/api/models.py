@@ -15,6 +15,7 @@ class User(Document):
     questionsAttempted = fields.ListField(fields.ReferenceField('Question'))  # Corrected to camelCase
     modulesCompleted = fields.ListField(fields.ReferenceField('Module'))  # Corrected to camelCase
     averageScore = fields.FloatField()  # Corrected to camelCase
+    active = fields.BooleanField(default=True)  # Add the 'active' field
 
 # -----------------------------
 # Course Model
@@ -53,11 +54,13 @@ class TestCase(EmbeddedDocument):
 # -----------------------------
 # Embedded Question Model
 # -----------------------------
-class Question(EmbeddedDocument):
+class Question(EmbeddedDocument):  # Ensure it is an EmbeddedDocument
     question = fields.StringField(required=True, max_length=500)
     type = fields.StringField(required=True, choices=["mcq", "msq", "nat"])
     options = fields.ListField(fields.StringField())  # Store as an array
     correctAnswer = fields.StringField(required=True, max_length=200)
+    hint = fields.StringField(max_length=500) 
+
 
 # -----------------------------
 # Module Model
@@ -66,7 +69,7 @@ class Module(Document):
     week = fields.ReferenceField(Week, required=True, reverse_delete_rule=CASCADE)
     title = fields.StringField(required=True, max_length=120)
     type = fields.StringField(required=True, choices=["video", "coding", "assignment", "document"])
-
+    
     # Video type
     url = fields.StringField(max_length=300)
 
@@ -78,7 +81,7 @@ class Module(Document):
 
     # Assignment type
     isGraded = fields.BooleanField(default=False)
-    questions = fields.EmbeddedDocumentListField(Question)  # Embedded Questions
+    questions = fields.EmbeddedDocumentListField(Question)  # Embedded Questions (optional)
 
     # Document type
     docType = fields.StringField(max_length=20)
@@ -93,17 +96,23 @@ class ChatHistory(Document):
     response = fields.StringField(required=True, max_length=1000)
     timestamp = fields.DateTimeField(default=datetime.now)
 
-    def __str__(self):
-        return f"ChatHistory(sessionId={self.sessionId}, query={self.query}, response={self.response})"
-
+    
 
 class CodeSubmission(Document):
-    user = fields.ReferenceField('User', required=True, reverse_delete_rule=CASCADE)
-    question = fields.ReferenceField('Question', required=True, reverse_delete_rule=CASCADE)
+    user = fields.ReferenceField(User, required=True, reverse_delete_rule=CASCADE)
+    question = fields.EmbeddedDocumentField(Question)  #  Store question inside submission
     submittedCode = fields.StringField(required=True)
     output = fields.StringField()
     isCorrect = fields.BooleanField(default=False)
     timestamp = fields.DateTimeField(default=datetime.now)
 
-    def __str__(self):
-        return f"CodeSubmission(user={self.user}, question={self.question}, submittedCode={self.submittedCode}, output={self.output})"
+
+class VideoTranscript(Document):
+    videoID = fields.StringField(required=True, max_length=50, unique=True)  # Unique YouTube video ID
+    transcript = fields.ListField(fields.DictField(), required=True)  # Store transcript as a list of dictionaries
+    fetched_at = fields.DateTimeField(default=datetime.now)  # Timestamp for when the transcript was fetched
+
+    meta = {
+        'collection': 'video_transcripts',  # Explicit collection name in MongoDB
+        'indexes': ['videoID'],  # Index for faster lookups by videoID
+    }

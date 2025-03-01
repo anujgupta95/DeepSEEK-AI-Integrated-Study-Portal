@@ -11,11 +11,9 @@ git push old-origin main
 git push new-origin main
 
 
-# Remove the embedded Git repo reference
-rm -rf backend/Deepseek-Backend/.git
 
 # Add the folder to your main repo
-git add backend/Deepseek-Backend
+git add backend
 git commit -m "Added backend code"
 git push origin main
 
