@@ -21,8 +21,9 @@ def test_api_response():
     assert isinstance(courses, list), f"Expected response to be a list, but is {type(courses)}"
 
     for course in courses:
-        required_keys = ["description", "endDate", "id", "name", "startDate"]
         assert isinstance(course, dict), f"Expected response to be a dict, but is {type(course)}"
+
+        required_keys = ["description", "endDate", "id", "name", "startDate"]
         assert set(required_keys) == set(course.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(course.keys())}"
 
 if __name__ == "__main__":
