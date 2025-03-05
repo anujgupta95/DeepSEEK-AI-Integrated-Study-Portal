@@ -3,7 +3,7 @@ import pytest
 
 API_URL = "https://api-deepseek.vercel.app/course/67c7fbef6675cfd49013bfca"
 
-def test_list_courses():
+def test_course_details():
     response = requests.get(API_URL)
 
     assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"

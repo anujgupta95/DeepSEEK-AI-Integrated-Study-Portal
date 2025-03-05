@@ -25,7 +25,7 @@ def test_1_login():
     data = response.json()
     user_id = data['userId']
 
-def test_2_user():
+def test_2_user_details():
     global user_id 
     # user_id = "67c72978a6c689ef424c0c6c"
     response = requests.get(USER_API_URL.format(user_id=user_id))
