@@ -3,7 +3,7 @@ import pytest
 
 API_URL = "https://api-deepseek.vercel.app/users"
 
-def test_api_response():
+def test_list_users():
     response = requests.get(API_URL)
     print(response.headers["Content-Type"])
 
@@ -12,7 +12,7 @@ def test_api_response():
     assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
 
     data = response.json()
-    users = data;
+    users = data
     
     assert isinstance(users, list), f"Expected response to be a list, but is {type(users)}"
 

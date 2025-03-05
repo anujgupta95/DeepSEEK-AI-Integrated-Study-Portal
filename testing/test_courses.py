@@ -3,7 +3,7 @@ import pytest
 
 API_URL = "https://api-deepseek.vercel.app/courses"
 
-def test_api_response():
+def test_list_courses():
     response = requests.get(API_URL)
     print(response.headers["Content-Type"])
 
