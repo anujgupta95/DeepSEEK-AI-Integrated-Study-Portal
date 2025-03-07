@@ -1,10 +1,10 @@
 import requests
 import pytest
 
-API_URL = "https://api-deepseek.vercel.app/course/67c7fbef6675cfd49013bfca"
+API_COURSE = "https://api-deepseek.vercel.app/course/{course_id}"
 
-def test_course_details():
-    response = requests.get(API_URL)
+def test_course_details(course1_id):
+    response = requests.get(API_COURSE.format(course_id=course1_id))
 
     assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
     
