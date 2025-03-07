@@ -2,6 +2,18 @@
 import pytest
 import globals
 
+def hello():
+    return "hello"
+
+def hi():
+    return "hi"
+
+@pytest.fixture
+def helpers():
+    return {
+        "hello": hello,
+        "hi": hi
+    }  
 @pytest.fixture(scope="session", autouse=True)
 def setup_globals():
     globals.initialize_globals()
