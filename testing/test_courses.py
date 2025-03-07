@@ -1,5 +1,6 @@
 import requests
 import pytest
+from globals import verify_keys
 
 API_URL = "https://api-deepseek.vercel.app/courses"
 
@@ -23,8 +24,13 @@ def test_list_courses():
     for course in courses:
         assert isinstance(course, dict), f"Expected response to be a dict, but is {type(course)}"
 
-        required_keys = ["description", "endDate", "id", "name", "startDate"]
-        assert set(required_keys) == set(course.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(course.keys())}"
+        required_keys = {"description":str,
+                         "endDate":str,
+                         "id":str,
+                         "name":str,
+                         "startDate":str
+                         }
+        verify_keys(required_keys, course)
 
 if __name__ == "__main__":
     pytest.main()

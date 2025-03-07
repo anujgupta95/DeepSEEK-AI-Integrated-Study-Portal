@@ -1,7 +1,7 @@
 import requests
 import pytest
 import json
-import globals
+from globals import verify_keys
 
 API_LOGIN = "https://api-deepseek.vercel.app/login"
 
@@ -12,7 +12,8 @@ headers = {
 def test_1_student_login(student_mail, 
                          student_name, 
                          profile_picture,
-                         login_success_msg):
+                         login_success_msg,
+                         helpers):
     input_data = {
         "email": student_mail,
         "name": student_name,
@@ -30,9 +31,14 @@ def test_1_student_login(student_mail,
 
     assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
 
-    required_keys = ["userId", "name", "email", "role", "message", "picture"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
-    
+    required_keys = {"userId":str, 
+                     "name":str, 
+                     "email":str, 
+                     "role":str, 
+                     "message":str, 
+                     "picture":str}
+    verify_keys(required_keys, data)
+
     assert student_mail == data['email'], f"Expected response to be same email as the login user, but is {data['email']}"
 
     assert data['message'] == login_success_msg, f"Expected response to be the message \'{login_success_msg}, but is \'{data['message']}\'"
@@ -60,9 +66,14 @@ def test_2_admin_login(admin_mail,
 
     assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
 
-    required_keys = ["userId", "name", "email", "role", "message", "picture"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
-    
+    required_keys = {"userId":str,
+                     "name":str, 
+                     "email":str, 
+                     "role":str, 
+                     "message":str, 
+                     "picture":str}
+    verify_keys(required_keys, data)
+
     assert admin_mail == data['email'], f"Expected response to be same email as the login user, but is {data['email']}"
 
     assert login_success_msg == "Login successful", f"Expected response to be the message \'{login_success_msg}\', but is \'{data['message']}\'"
@@ -90,9 +101,14 @@ def test_3_faculty_login(faculty_mail,
 
     assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
 
-    required_keys = ["userId", "name", "email", "role", "message", "picture"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
-    
+    required_keys = {"userId":str, 
+                     "name":str, 
+                     "email":str, 
+                     "role":str, 
+                     "message":str, 
+                     "picture":str}
+    verify_keys(required_keys, data)
+
     assert faculty_mail == data['email'], f"Expected response to be same email as the login user, but is {data['email']}"
 
     assert data['message'] == login_success_msg, f"Expected response to be the message '{login_success_msg}\', but is \'{data['message']}\'"
@@ -115,8 +131,8 @@ def test_4_email_required(student_name,
     
     data = response.json()
 
-    required_keys = ["error"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    required_keys = {"error":str}
+    verify_keys(required_keys, data)
     
     assert data['error'] == email_required_msg, f"Expected response to be error: \'{email_required_msg}\', but is \'{data['error']}\'"
 

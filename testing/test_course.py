@@ -1,5 +1,6 @@
 import requests
 import pytest
+from globals import verify_keys
 
 API_COURSE = "https://api-deepseek.vercel.app/course/{course_id}"
 
@@ -14,35 +15,47 @@ def test_course_details(course1_id):
     
     assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
     
-    required_keys = ["announcements", "courseId", "name", "description", "startDate", "endDate", "weeks"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    required_keys = {"announcements":list, 
+                     "courseId":str,
+                     "name":str,
+                     "description":str,
+                     "startDate":str,
+                     "endDate":str,
+                     "weeks":list
+                     }
+    verify_keys(required_keys, data)
 
     announcements = data['announcements']
-    assert isinstance(announcements, list), f"Expected response to be a list, but is {type(announcements)}"
-    
+   
     for announcement in announcements:
         assert isinstance(announcement, dict), f"Expected response to be a dict, but is {type(announcement)}"
 
-        required_keys = ["announcementId", "date", "message"]
-        assert set(required_keys) == set(announcement.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(announcement.keys())}"
+        required_keys = {"announcementId":str,
+                         "date":str,
+                         "message":str
+                         }
+        verify_keys(required_keys, announcement)
 
     weeks = data['weeks']
-    assert isinstance(weeks, list), f"Expected response to be a list, but is {type(weeks)}"
-    
     for week in weeks:
         assert isinstance(week, dict), f"Expected response to be a dict, but is {type(week)}"
 
-        required_keys = ["deadline", "modules", "title", "weekId"]
-        assert set(required_keys) == set(week.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(week.keys())}"
+        required_keys = {"deadline":str,
+                         "modules":list,
+                         "title":str,
+                         "weekId":str
+                         }
+        verify_keys(required_keys, week)
 
         modules = week['modules']
-        assert isinstance(modules, list), f"Expected response to be a list, but is {type(modules)}"
-        
         for module in modules:
             assert isinstance(module, dict), f"Expected response to be a dict, but is {type(module)}"
 
-            required_keys = ["moduleId", "title", "type"] #url and questions not present in all modules
-            assert set(required_keys).issubset(set(module.keys())), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(module.keys())}"
+            required_keys = {"moduleId":str,
+                             "title":str,
+                             "type":str
+                             } #url and questions not present in all modules
+            verify_keys(required_keys, module)
 
             if "questions" in module:
                 questions = module['questions']
@@ -51,11 +64,13 @@ def test_course_details(course1_id):
                 for question in questions:
                     assert isinstance(question, dict), f"Expected response to be a dict, but is {type(question)}"
 
-                    required_keys = ["correctAnswer", "hint", "options", "question", "type"]
-                    assert set(required_keys) == set(question.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(question.keys())}"
-
-                    options = question['options']
-                    assert isinstance(options, list), f"Expected response to be a list, but is {type(options)}"                
+                    required_keys = {"correctAnswer":str,
+                                    #  "hint":str, # Hint can be null sometimes.
+                                     "options":list,
+                                     "question":str,
+                                     "type":str
+                                     }
+                    verify_keys(required_keys, question)
 
 if __name__ == "__main__":
     pytest.main()

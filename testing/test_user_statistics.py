@@ -1,6 +1,7 @@
 import requests
 import pytest
 import json
+from globals import verify_keys
 
 user_id = None # Run test_1_login to get this value.
 API_LOGIN = "https://api-deepseek.vercel.app/login"
@@ -41,20 +42,24 @@ def test_2_user_statistics():
 
     assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
 
-    required_keys = ["id", "name", "email", "statistics", "registeredCourses", "role"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    required_keys = {"id":str,
+                     "name":str, 
+                     "email":str, 
+                     "statistics":dict, 
+                     "registeredCourses":list, 
+                     "role":str
+                     }
+    verify_keys(required_keys, data)
 
     statistics = data['statistics']    
 
-    assert isinstance(statistics, dict), f"Expected response to be a dict, but is {type(statistics)}"
-
-    required_keys = ["averageScore", "modulesCompleted", "questionsAttempted"]
-    assert set(required_keys) == set(statistics.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(statistics.keys())}"
+    required_keys = {"averageScore":int, 
+                     "modulesCompleted":int, 
+                     "questionsAttempted":int
+                     }
+    verify_keys(required_keys, statistics)
 
     assert user_id == data['id'], f"Expected response to be same id as used in the query params, but is {data['id']}"
-
-    reg_courses = data['registeredCourses']
-    assert isinstance(reg_courses, list), f"Expected response to be a list, but is {type(reg_courses)}"
 
     assert data['role'] == "student", f"Expected response to be 'student', but is \'{data['role']}\'"
 
@@ -79,8 +84,8 @@ def test_4_user_statistics_user_not_found(server_error_msg):
 
     data = response.json()
 
-    required_keys = ["message"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    required_keys = {"message":str}
+    verify_keys(required_keys, data)
 
     assert data['message'] == server_error_msg, f"Expected response to be \'{server_error_msg}\', but is \'{data['message']}\'"
 

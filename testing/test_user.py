@@ -1,6 +1,7 @@
 import requests
 import pytest
 import json
+from globals import verify_keys
 
 user_id = None # Run login to get this value.
 API_LOGIN = "https://api-deepseek.vercel.app/login"
@@ -39,13 +40,16 @@ def test_2_user_details():
 
     assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
 
-    required_keys = ["id", "name", "email", "profilePictureUrl", "registeredCourses", "role"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    required_keys = {"id":str, 
+                     "name":str, 
+                     "email":str, 
+                     "profilePictureUrl":str, 
+                     "registeredCourses":list, 
+                     "role":str
+                     }
+    verify_keys(required_keys, data)
     
     assert user_id == data['id'], f"Expected response to be same email as used in the query params, but is {data['id']}"
-
-    reg_courses = data['registeredCourses']
-    assert isinstance(reg_courses, list), f"Expected response to be a list, but is {type(reg_courses)}"
 
     assert data['role'] == "student", f"Expected response to be 'student', but is \'{data['role']}\'"
 
@@ -55,8 +59,8 @@ def test_3_user_delete(user_del_success_msg):
 
     data = response.json()
     
-    required_keys = ["message"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    required_keys = {"message":str}
+    verify_keys(required_keys, data)
 
     assert data['message'] == user_del_success_msg, f"Expected response to be \'{user_del_success_msg}\', but is \'{data['message']}\'"
 
@@ -66,8 +70,8 @@ def test_4_user_delete_user_not_found(user_not_found_msg):
 
     data = response.json()
     
-    required_keys = ["error"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    required_keys = {"error":str}
+    verify_keys(required_keys, data)
 
     assert data['error'] == user_not_found_msg, f"Expected response to be \'{user_not_found_msg}\', but is \'{data['message']}\'"
 
@@ -83,8 +87,8 @@ def test_5_user_details_user_not_found(user_not_found_msg):
 
     assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
 
-    required_keys = ["error"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    required_keys = {"error":str}
+    verify_keys(required_keys, data)
     
     assert data['error'] == user_not_found_msg, f"Expected response to be error: \'{user_not_found_msg}\', but is \'{data['error']}\'"
 
