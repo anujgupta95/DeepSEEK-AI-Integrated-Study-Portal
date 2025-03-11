@@ -244,5 +244,47 @@ def test_9_list_registered_courses_without_email(
 
     assert data['error'] == email_required_msg, f"Expected response to be the message \'{email_required_msg}\', but is \'{data['error']}\'"
 
+def test_10_list_registered_courses_invalid_user(invalid_student_mail,
+                          user_not_found_msg):
+    response = requests.get(API_REGISTERED_COURSES.format(email=invalid_student_mail))
+
+    assert response.status_code == 404, f"Expected status code 404, but is {response.status_code}"
+    
+    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+
+    data = response.json()
+    
+    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    
+    required_keys = {"error":str}
+    verify_keys(required_keys, data)
+
+    assert data['error'] == user_not_found_msg, f"Expected response to be the message \'{user_not_found_msg}\', but is \'{data['error']}\'"
+
+def test_11_register_courses_empty_payload(reg_bad_request_msg):
+    input_data = {
+    }
+
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    payload = json.dumps(input_data)
+
+    response = requests.post(API_REGISTER_COURSE, data=payload, headers=headers)
+
+    assert response.status_code == 400, f"Expected status code 400, but is {response.status_code}"
+    
+    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+
+    data = response.json()
+    
+    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    
+    required_keys = {"error":str}
+    verify_keys(required_keys, data)
+
+    assert data['error'] == reg_bad_request_msg, f"Expected response to be the message \'{reg_bad_request_msg}\', but is \'{data['error']}\'"
+
 if __name__ == "__main__":
     pytest.main()
