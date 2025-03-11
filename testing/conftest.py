@@ -99,6 +99,14 @@ def profile_picture():
     return globals.vars["profile_picture"]
 
 @pytest.fixture
+def video_url():
+    return globals.vars["video_url"]
+
+@pytest.fixture
+def invalid_video_url():
+    return globals.vars["invalid_video_url"]
+
+@pytest.fixture
 def login_success_msg():
     return globals.vars["login_success_msg"]
 
@@ -125,3 +133,19 @@ def server_error_msg():
 @pytest.fixture
 def invalid_course_msg():
     return globals.vars["invalid_course_msg"]
+
+@pytest.fixture
+def reg_bad_request_msg():
+    return globals.vars["reg_bad_request_msg"]
+
+@pytest.fixture
+def transcript_not_found_msg():
+    return globals.vars["transcript_not_found_msg"]
+
+@pytest.fixture
+def video_url_required_msg():
+    return globals.vars["video_url_required_msg"]
+
+@pytest.fixture
+def query_option_required_msg():
+    return globals.vars["query_option_required_msg"]

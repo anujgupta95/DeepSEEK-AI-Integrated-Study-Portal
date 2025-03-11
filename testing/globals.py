@@ -14,13 +14,18 @@ vars = {
     "invalid_student_id":None,
     "invalid_course_id":None,
     "profile_picture":None,
+    "video_url": None,
     "login_success_msg": None,
     "course_reg_success_msg": None,
     "user_del_success_msg": None,
     "user_not_found_msg": None,
     "server_error_msg": None,
     "invalid_course_msg": None,
-    "email_required_msg": None
+    "email_required_msg": None,
+    "reg_bad_request_msg": None,
+    "transcript_not_found_msg": None,
+    "video_url_required_msg": None,
+    "query_option_required_msg": None
 }
 
 def initialize_globals():
@@ -46,6 +51,8 @@ def initialize_globals():
     vars["invalid_student_id"] = "1234567890"
     vars["invalid_course_id"] = "1234567890"
     vars["profile_picture"] = "https://example.com/profile.jpg"
+    vars["video_url"] = "https://www.youtube.com/embed/PBnhRTf00Z0"
+    vars["invalid_video_url"] = "https://youtu.be/tSxaHyukmIU"
     vars["login_success_msg"] = "Login successful"
     vars["email_required_msg"] = "Email is required"
     vars["course_reg_success_msg"] = "User updated with new courses"
@@ -53,8 +60,12 @@ def initialize_globals():
     vars["user_not_found_msg"] = "User not found"
     vars["server_error_msg"] = "Internal Server Error"
     vars["invalid_course_msg"] = "Invalid course ID"
+    vars["reg_bad_request_msg"] = "Email and courses are required"
+    vars["transcript_not_found_msg"] = "Transcript not found for the given video URL"
+    vars["video_url_required_msg"] = "videoURL is required"
+    vars["query_option_required_msg"] = "Query and option are required"
 
 def verify_keys(required_keys, data):
-    assert set(required_keys.keys()).issubset(set(data.keys())), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    assert set(required_keys.keys()).issubset(set(data.keys())), f"Expected response to have following keys: {required_keys.keys()}, but found the following keys: {list(data.keys())}"
     for key in required_keys:
         assert required_keys[key] == type(data[key]), f"Expected type of {key} to be {required_keys[key]}({key}), but is {type(data[key])}"
