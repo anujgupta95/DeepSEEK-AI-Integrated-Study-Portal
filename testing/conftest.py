@@ -31,6 +31,10 @@ def admin_name():
     return globals.vars["admin_name"]
 
 @pytest.fixture
+def admin_pp():
+    return globals.vars["admin_pp"]
+
+@pytest.fixture
 def student_mail():
     return globals.vars["student_mail"]
 
@@ -41,6 +45,10 @@ def student_name():
 @pytest.fixture
 def student_id():
     return globals.vars["student_id"]
+
+@pytest.fixture
+def student_pp():
+    return globals.vars["student_pp"]
 
 @pytest.fixture
 def student2_mail():
@@ -61,6 +69,10 @@ def faculty_id():
 @pytest.fixture
 def faculty_name():
     return globals.vars["faculty_name"]
+
+@pytest.fixture
+def faculty_pp():
+    return globals.vars["faculty_pp"]
 
 @pytest.fixture
 def course1_id():
