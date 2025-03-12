@@ -9,7 +9,7 @@ headers = {
   'Content-Type': 'application/json'
 }
 
-def test_chatbot(student_mail,
+def test_1_chatbot(student_mail,
                  student_id,
                  student_name,
                  student_pp):
@@ -72,7 +72,7 @@ def test_chatbot(student_mail,
 
         assertEquals(user['profilePictureUrl'], student_pp)
 
-def test_with_incomplete_payload(student_mail,
+def test_2_incomplete_payload(student_mail,
                                     query_option_required_msg):
     input_data = {
         "option": "option",
@@ -96,7 +96,7 @@ def test_with_incomplete_payload(student_mail,
 
     assertEquals(data['error'], query_option_required_msg)
 
-def test_with_invalid_user(invalid_student_mail,
+def test_3_invalid_user(invalid_student_mail,
                            user_not_found_msg):
     input_data = {
         "query": "What is ML?",
