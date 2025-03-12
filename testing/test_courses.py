@@ -1,6 +1,6 @@
 import requests
 import pytest
-from globals import verify_keys
+from globals import verify_keys, assertEquals, assertTrue, assertInstance
 
 API_URL = "https://api-deepseek.vercel.app/courses"
 
@@ -8,21 +8,22 @@ def test_list_courses():
     response = requests.get(API_URL)
     print(response.headers["Content-Type"])
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
-    assert len(data['courses']) > 0, "Expected response to contain at least one course"
+    courses = data['courses']
+    
+    assertTrue(len(courses) > 0, "Expected response to contain at least one course")
 
-    courses = data['courses'];
-    assert isinstance(courses, list), f"Expected response to be a list, but is {type(courses)}"
+    assertInstance(courses, list)
 
     for course in courses:
-        assert isinstance(course, dict), f"Expected response to be a dict, but is {type(course)}"
+        assertInstance(course, dict)
 
         required_keys = {"description":str,
                          "endDate":str,

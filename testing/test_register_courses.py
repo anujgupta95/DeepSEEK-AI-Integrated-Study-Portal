@@ -1,7 +1,7 @@
 import requests
 import pytest
 import json
-from globals import verify_keys
+from globals import verify_keys, assertEquals, assertTrue, assertInstance
 
 user_id = None
 API_REGISTER_COURSE = "https://api-deepseek.vercel.app/registered-courses"
@@ -32,44 +32,44 @@ def test_1_register_course(student_mail,
 
     response = requests.post(API_REGISTER_COURSE, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"message":str,
                      "user_id":str
                      }
     verify_keys(required_keys, data)
 
-    assert data['message'] == course_reg_success_msg, f"Expected response to be the message \'{course_reg_success_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['message'], course_reg_success_msg)
 
-    assert data['user_id'] == student_id, f"Expected response to be the {student_id}, but is {data['user_id']}"
+    assertEquals(data['user_id'], student_id)
 
 def test_2_list_registered_courses(student_mail,
                                    course1_id):
     response = requests.get(API_REGISTERED_COURSES.format(email=student_mail))
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"registeredCourses":list}
     verify_keys(required_keys, data)
 
     courses = data['registeredCourses']
-    assert isinstance(courses, list), f"Expected response to be a dict, but is {type(courses)}"
+    assertInstance(courses, list)
 
     set_courses = set()
     for course in courses:
-        assert isinstance(course, dict), f"Expected response to be a dict, but is {type(course)}"
+        assertInstance(course, dict)
 
         required_keys = {"id":str, 
                          "name":str, 
@@ -78,7 +78,8 @@ def test_2_list_registered_courses(student_mail,
         verify_keys(required_keys, course)
 
         set_courses.add(course['id'])
-    assert set_courses == {course1_id}, f"Expected response to have following courses: {course1_id}, but found the following keys: {list(set_courses)}"
+    # Cannot be assertEquals, due to non-standard message.
+    assertTrue(set_courses == {course1_id}, f"Expected response to have following courses: {course1_id}, but found the following keys: {list(set_courses)}") 
 
 def test_3_identify_user(student2_mail,
                  student2_name,
@@ -93,9 +94,10 @@ def test_3_identify_user(student2_mail,
 
     response = requests.post(API_LOGIN, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
-    
+    assertEquals(response.status_code, 200)
+
     data = response.json()
+
     user_id = data['userId']
 
 def test_4_user_delete(student2_mail,
@@ -103,12 +105,14 @@ def test_4_user_delete(student2_mail,
     global user_id 
     response = requests.delete(API_USER.format(user_id=user_id))
 
+    assertEquals(response.status_code, 200)
+    
     data = response.json()
     
     required_keys = {"message":str}
     verify_keys(required_keys, data)
 
-    assert data['message'] == user_del_success_msg, f"Expected response to be \'{user_del_success_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['message'], user_del_success_msg)
 
 def test_5_create_user(student2_mail, 
                  student2_name, 
@@ -123,9 +127,10 @@ def test_5_create_user(student2_mail,
 
     response = requests.post(API_LOGIN, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
     data = response.json()
+    
     user_id = data['userId']
 
 def test_6_register_two_courses(student2_mail,
@@ -147,34 +152,34 @@ def test_6_register_two_courses(student2_mail,
 
     response = requests.post(API_REGISTER_COURSE, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"message":str,
                      "user_id":str}
     verify_keys(required_keys, data)
 
-    assert data['message'] == course_reg_success_msg, f"Expected response to be the message \'{course_reg_success_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['message'], course_reg_success_msg)
 
-    assert data['user_id'] == user_id, f"Expected response to be {user_id}, but is {data['user_id']}"
+    assertEquals(data['user_id'], user_id)
 
 def test_7_list_registered_courses(student2_mail,
                                  course1_id,
                                  course2_id):
     response = requests.get(API_REGISTERED_COURSES.format(email=student2_mail))
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"registeredCourses":list}
     verify_keys(required_keys, data)
@@ -183,7 +188,7 @@ def test_7_list_registered_courses(student2_mail,
 
     set_courses = set()
     for course in courses:
-        assert isinstance(course, dict), f"Expected response to be a dict, but is {type(course)}"
+        assertInstance(course, dict)
 
         required_keys = {"id":str, 
                          "name":str, 
@@ -191,7 +196,9 @@ def test_7_list_registered_courses(student2_mail,
         verify_keys(required_keys, course)
 
         set_courses.add(course['id'])
-    assert set_courses == {course1_id, course2_id}, f"Expected response to have following courses: {course1_id, course2_id}, but found the following keys: {list(set_courses)}"
+
+    # Cannot be assertEquals, due to non-standard message.
+    assertTrue(set_courses == {course1_id, course2_id}, f"Expected response to have following courses: {course1_id, course2_id}, but found the following keys: {list(set_courses)}")
 
 def test_8_register_invalid_course(student_mail, 
                           student_id,
@@ -212,54 +219,54 @@ def test_8_register_invalid_course(student_mail,
 
     response = requests.post(API_REGISTER_COURSE, data=payload, headers=headers)
 
-    assert response.status_code == 400, f"Expected status code 400, but is {response.status_code}"
+    assertEquals(response.status_code, 400)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"details":str,
                      "error":str
                     }
     verify_keys(required_keys, data)
 
-    assert data['error'] == invalid_course_msg, f"Expected response to be the message \'{invalid_course_msg}\', but is \'{data['error']}\'"
+    assertEquals(data['error'], invalid_course_msg)
 
 def test_9_list_registered_courses_without_email(
                           email_required_msg):
     response = requests.get(API_REGISTERED_COURSES.format(email=''))
 
-    assert response.status_code == 400, f"Expected status code 400, but is {response.status_code}"
+    assertEquals(response.status_code, 400)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"error":str}
     verify_keys(required_keys, data)
 
-    assert data['error'] == email_required_msg, f"Expected response to be the message \'{email_required_msg}\', but is \'{data['error']}\'"
+    assertEquals(data['error'], email_required_msg)
 
 def test_10_list_registered_courses_invalid_user(invalid_student_mail,
                           user_not_found_msg):
     response = requests.get(API_REGISTERED_COURSES.format(email=invalid_student_mail))
 
-    assert response.status_code == 404, f"Expected status code 404, but is {response.status_code}"
+    assertEquals(response.status_code, 404)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"error":str}
     verify_keys(required_keys, data)
 
-    assert data['error'] == user_not_found_msg, f"Expected response to be the message \'{user_not_found_msg}\', but is \'{data['error']}\'"
+    assertEquals(data['error'], user_not_found_msg)
 
 def test_11_register_courses_empty_payload(reg_bad_request_msg):
     input_data = {
@@ -273,18 +280,18 @@ def test_11_register_courses_empty_payload(reg_bad_request_msg):
 
     response = requests.post(API_REGISTER_COURSE, data=payload, headers=headers)
 
-    assert response.status_code == 400, f"Expected status code 400, but is {response.status_code}"
+    assertEquals(response.status_code, 400)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"error":str}
     verify_keys(required_keys, data)
 
-    assert data['error'] == reg_bad_request_msg, f"Expected response to be the message \'{reg_bad_request_msg}\', but is \'{data['error']}\'"
+    assertEquals(data['error'], reg_bad_request_msg)
 
 if __name__ == "__main__":
     pytest.main()

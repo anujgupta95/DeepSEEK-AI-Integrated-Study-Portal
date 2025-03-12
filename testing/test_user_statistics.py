@@ -1,7 +1,7 @@
 import requests
 import pytest
 import json
-from globals import verify_keys
+from globals import verify_keys, assertEquals, assertTrue, assertInstance
 
 user_id = None # Run test_1_login to get this value.
 API_LOGIN = "https://api-deepseek.vercel.app/login"
@@ -25,22 +25,23 @@ def test_1_login(student2_name,
 
     response = requests.post(API_LOGIN, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
     data = response.json()
+    
     user_id = data['userId']
 
 def test_2_user_statistics():
     global user_id 
     response = requests.get(API_USER_STATS.format(user_id=user_id))
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
-
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    
+    assertInstance(data, dict)
 
     required_keys = {"id":str,
                      "name":str, 
@@ -59,9 +60,9 @@ def test_2_user_statistics():
                      }
     verify_keys(required_keys, statistics)
 
-    assert user_id == data['id'], f"Expected response to be same id as used in the query params, but is {data['id']}"
+    assertEquals(data['id'], user_id)
 
-    assert data['role'] == "student", f"Expected response to be 'student', but is \'{data['role']}\'"
+    assertEquals(data['role'], "student")
 
 def test_3_user_delete(user_del_success_msg):
     global user_id 
@@ -70,24 +71,26 @@ def test_3_user_delete(user_del_success_msg):
     data = response.json()
     
     required_keys = ["message"]
-    assert set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}"
+    assertTrue(set(required_keys) == set(data.keys()), f"Expected response to have following keys: {required_keys}, but found the following keys: {list(data.keys())}")
 
-    assert data['message'] == user_del_success_msg, f"Expected response to be \'{user_del_success_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['message'], user_del_success_msg)
 
 def test_4_user_statistics_user_not_found(server_error_msg):
     global user_id 
     response = requests.get(API_USER_STATS.format(user_id=user_id))
 
-    assert response.status_code == 500, f"Expected status code 404, but is {response.status_code}"
+    assertEquals(response.status_code, 404) # Bug
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
+    
+    assertInstance(data, dict)
 
     required_keys = {"message":str}
     verify_keys(required_keys, data)
 
-    assert data['message'] == server_error_msg, f"Expected response to be \'{server_error_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['message'], server_error_msg)
 
 if __name__ == "__main__":
     pytest.main()

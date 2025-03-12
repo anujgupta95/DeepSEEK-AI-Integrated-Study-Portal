@@ -1,7 +1,7 @@
 import requests
 import pytest
 import json
-from globals import verify_keys
+from globals import verify_keys, assertEquals, assertInstance
 
 API_LOGIN = "https://api-deepseek.vercel.app/login"
 
@@ -23,13 +23,13 @@ def test_1_student_login(student_mail,
 
     response = requests.post(API_LOGIN, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
-
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    
+    assertInstance(data, dict)
 
     required_keys = {"userId":str, 
                      "name":str, 
@@ -39,11 +39,11 @@ def test_1_student_login(student_mail,
                      "picture":str}
     verify_keys(required_keys, data)
 
-    assert student_mail == data['email'], f"Expected response to be same email as the login user, but is {data['email']}"
+    assertEquals(data['email'], student_mail)
 
-    assert data['message'] == login_success_msg, f"Expected response to be the message \'{login_success_msg}, but is \'{data['message']}\'"
+    assertEquals(data['message'], login_success_msg)
 
-    assert data['role'] == "student", f"Expected response to be 'student', but is \'{data['role']}\'"
+    assertEquals(data['role'], "student")
 
 def test_2_admin_login(admin_mail,
                        admin_name,
@@ -58,13 +58,13 @@ def test_2_admin_login(admin_mail,
 
     response = requests.post(API_LOGIN, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
-
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    
+    assertInstance(data, dict)
 
     required_keys = {"userId":str,
                      "name":str, 
@@ -74,11 +74,11 @@ def test_2_admin_login(admin_mail,
                      "picture":str}
     verify_keys(required_keys, data)
 
-    assert admin_mail == data['email'], f"Expected response to be same email as the login user, but is {data['email']}"
+    assertEquals(data['email'], admin_mail)
 
-    assert login_success_msg == "Login successful", f"Expected response to be the message \'{login_success_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['message'], login_success_msg)
 
-    assert data['role'] == "admin", f"Expected response to be 'admin', but is \'{data['role']}\'"
+    assertEquals(data['role'], "admin")
 
 def test_3_faculty_login(faculty_mail,
                          faculty_name,
@@ -93,13 +93,13 @@ def test_3_faculty_login(faculty_mail,
 
     response = requests.post(API_LOGIN, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
-
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    
+    assertInstance(data, dict)
 
     required_keys = {"userId":str, 
                      "name":str, 
@@ -109,11 +109,11 @@ def test_3_faculty_login(faculty_mail,
                      "picture":str}
     verify_keys(required_keys, data)
 
-    assert faculty_mail == data['email'], f"Expected response to be same email as the login user, but is {data['email']}"
+    assertEquals(data['email'], faculty_mail)
 
-    assert data['message'] == login_success_msg, f"Expected response to be the message '{login_success_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['message'], login_success_msg)
 
-    assert data['role'] == "faculty", f"Expected response to be 'faculty', but is \'{data['role']}\'"
+    assertEquals(data['role'], "faculty")
 
 def test_4_email_required(student_name,
                           profile_picture,
@@ -127,14 +127,14 @@ def test_4_email_required(student_name,
 
     response = requests.post(API_LOGIN, data=payload, headers=headers)
 
-    assert response.status_code == 400, f"Expected status code 400, but is {response.status_code}"
+    assertEquals(response.status_code, 400)
     
     data = response.json()
 
     required_keys = {"error":str}
     verify_keys(required_keys, data)
     
-    assert data['error'] == email_required_msg, f"Expected response to be error: \'{email_required_msg}\', but is \'{data['error']}\'"
+    assertEquals(data['error'], email_required_msg)
 
 if __name__ == "__main__":
     pytest.main()

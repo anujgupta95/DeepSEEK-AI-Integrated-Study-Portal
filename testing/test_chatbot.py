@@ -1,7 +1,7 @@
 import requests
 import pytest
 import json
-from globals import verify_keys
+from globals import verify_keys, assertEquals, assertInstance
 
 API_CHATBOT = "https://api-deepseek.vercel.app/chatbot"
 
@@ -9,24 +9,29 @@ headers = {
   'Content-Type': 'application/json'
 }
 
-def test_chatbot(student_mail):
+def test_chatbot(student_mail,
+                 student_id,
+                 student_name,
+                 student_pp):
+    session_id = "S1234"
+    query = "What is ML?"
     input_data = {
-        "query": "What is ML?",
+        "query": query,
         "option": "option",
-        "sessionId": "S1234",
+        "sessionId": session_id,
         "userEmail": student_mail
     }
     payload = json.dumps(input_data)
 
     response = requests.post(API_CHATBOT, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"sessionId":str, 
                         "question":str, 
@@ -35,9 +40,13 @@ def test_chatbot(student_mail):
                     }
     verify_keys(required_keys, data)
 
+    assertEquals(data['sessionId'], session_id)
+
+    assertEquals(data['question'], query)
+
     chathistories = data["chatHistory"]
     for chathistory in chathistories:
-        assert isinstance(chathistory, dict), f"Expected response to be a dict, but is {type(chathistory)}"
+        assertInstance(chathistory, dict)
         
         required_keys = {"query":str, 
                             "answer":str, 
@@ -55,6 +64,14 @@ def test_chatbot(student_mail):
                         }
         verify_keys(required_keys, user)
 
+        assertEquals(user['name'], student_name)
+
+        assertEquals(user['email'], student_mail)
+
+        assertEquals(user['role'], "student")
+
+        assertEquals(user['profilePictureUrl'], student_pp)
+
 def test_with_incomplete_payload(student_mail,
                                     query_option_required_msg):
     input_data = {
@@ -66,18 +83,18 @@ def test_with_incomplete_payload(student_mail,
 
     response = requests.post(API_CHATBOT, data=payload, headers=headers)
 
-    assert response.status_code == 400, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 400)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"error":str}
     verify_keys(required_keys, data)
 
-    assert data['error'] == query_option_required_msg, f"Expected response to be error: \'{query_option_required_msg}\', but is \'{data['error']}\'"
+    assertEquals(data['error'], query_option_required_msg)
 
 def test_with_invalid_user(invalid_student_mail,
                            user_not_found_msg):
@@ -91,18 +108,18 @@ def test_with_invalid_user(invalid_student_mail,
 
     response = requests.post(API_CHATBOT, data=payload, headers=headers)
 
-    assert response.status_code == 404, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 404)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"error":str}
     verify_keys(required_keys, data)
 
-    assert data['error'] == user_not_found_msg, f"Expected response to be error: \'{user_not_found_msg}\', but is \'{data['error']}\'"
+    assertEquals(data['error'], user_not_found_msg)
 
 if __name__ == "__main__":
     pytest.main()

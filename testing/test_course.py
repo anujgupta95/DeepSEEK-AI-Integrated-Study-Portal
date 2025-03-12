@@ -1,19 +1,19 @@
 import requests
 import pytest
-from globals import verify_keys
+from globals import verify_keys, assertEquals, assertInstance
 
 API_COURSE = "https://api-deepseek.vercel.app/course/{course_id}"
 
 def test_course_details(course1_id):
     response = requests.get(API_COURSE.format(course_id=course1_id))
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
     
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    assertInstance(data, dict)
     
     required_keys = {"announcements":list, 
                      "courseId":str,
@@ -28,7 +28,7 @@ def test_course_details(course1_id):
     announcements = data['announcements']
    
     for announcement in announcements:
-        assert isinstance(announcement, dict), f"Expected response to be a dict, but is {type(announcement)}"
+        assertInstance(announcement, dict)
 
         required_keys = {"announcementId":str,
                          "date":str,
@@ -38,7 +38,7 @@ def test_course_details(course1_id):
 
     weeks = data['weeks']
     for week in weeks:
-        assert isinstance(week, dict), f"Expected response to be a dict, but is {type(week)}"
+        assertInstance(week, dict)
 
         required_keys = {"deadline":str,
                          "modules":list,
@@ -49,7 +49,7 @@ def test_course_details(course1_id):
 
         modules = week['modules']
         for module in modules:
-            assert isinstance(module, dict), f"Expected response to be a dict, but is {type(module)}"
+            assertInstance(module, dict)
 
             required_keys = {"moduleId":str,
                              "title":str,
@@ -59,10 +59,10 @@ def test_course_details(course1_id):
 
             if "questions" in module:
                 questions = module['questions']
-                assert isinstance(questions, list), f"Expected response to be a list, but is {type(questions)}"
+                assertInstance(questions, list)
                 
                 for question in questions:
-                    assert isinstance(question, dict), f"Expected response to be a dict, but is {type(question)}"
+                    assertInstance(question, dict)
 
                     required_keys = {"correctAnswer":str,
                                     #  "hint":str, # Hint can be null sometimes.

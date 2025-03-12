@@ -1,7 +1,7 @@
 import requests
 import pytest
 import json
-from globals import verify_keys
+from globals import verify_keys, assertEquals, assertInstance
 
 user_id = None # Run login to get this value.
 API_LOGIN = "https://api-deepseek.vercel.app/login"
@@ -23,22 +23,23 @@ def test_1_login(student2_mail,
 
     response = requests.post(API_LOGIN, data=payload, headers=headers)
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
     data = response.json()
+    
     user_id = data['userId']
 
 def test_2_user_details():
     global user_id 
     response = requests.get(API_USER.format(user_id=user_id))
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
-
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    
+    assertInstance(data, dict)
 
     required_keys = {"id":str, 
                      "name":str, 
@@ -49,9 +50,9 @@ def test_2_user_details():
                      }
     verify_keys(required_keys, data)
     
-    assert user_id == data['id'], f"Expected response to be same email as used in the query params, but is {data['id']}"
+    assertEquals(data['id'], user_id)
 
-    assert data['role'] == "student", f"Expected response to be 'student', but is \'{data['role']}\'"
+    assertEquals(data['role'], "student")
 
 def test_3_user_delete(user_del_success_msg):
     global user_id 
@@ -62,7 +63,7 @@ def test_3_user_delete(user_del_success_msg):
     required_keys = {"message":str}
     verify_keys(required_keys, data)
 
-    assert data['message'] == user_del_success_msg, f"Expected response to be \'{user_del_success_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['message'], user_del_success_msg)
 
 def test_4_user_delete_user_not_found(user_not_found_msg):
     global user_id 
@@ -73,24 +74,24 @@ def test_4_user_delete_user_not_found(user_not_found_msg):
     required_keys = {"error":str}
     verify_keys(required_keys, data)
 
-    assert data['error'] == user_not_found_msg, f"Expected response to be \'{user_not_found_msg}\', but is \'{data['message']}\'"
+    assertEquals(data['error'], user_not_found_msg)
 
 def test_5_user_details_user_not_found(user_not_found_msg):
     global user_id 
     response = requests.get(API_USER.format(user_id=user_id))
 
-    assert response.status_code == 404, f"Expected status code 404, but is {response.status_code}"
+    assertEquals(response.status_code, 404)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     data = response.json()
-
-    assert isinstance(data, dict), f"Expected response to be a dict, but is {type(data)}"
+    
+    assertInstance(data, dict)
 
     required_keys = {"error":str}
     verify_keys(required_keys, data)
     
-    assert data['error'] == user_not_found_msg, f"Expected response to be error: \'{user_not_found_msg}\', but is \'{data['error']}\'"
+    assertEquals(data['error'], user_not_found_msg)
 
 if __name__ == "__main__":
     pytest.main()

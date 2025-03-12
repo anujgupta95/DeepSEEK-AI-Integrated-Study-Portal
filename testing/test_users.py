@@ -1,6 +1,6 @@
 import requests
 import pytest
-from globals import verify_keys
+from globals import verify_keys, assertEquals, assertInstance
 
 API_URL = "https://api-deepseek.vercel.app/users"
 
@@ -8,16 +8,16 @@ def test_list_users():
     response = requests.get(API_URL)
     print(response.headers["Content-Type"])
 
-    assert response.status_code == 200, f"Expected status code 200, but is {response.status_code}"
+    assertEquals(response.status_code, 200)
     
-    assert response.headers["Content-Type"] == "application/json", f"Expected Content-Type application/json, but is {response.headers['Content-Type']}"
+    assertEquals(response.headers["Content-Type"], "application/json")
 
     users = response.json()
     
-    assert isinstance(users, list), f"Expected response to be a list, but is {type(users)}"
+    assertInstance(users, list)
 
-    for user in users:        
-        assert isinstance(user, dict), f"Expected response to be a dict, but is {type(user)}"
+    for user in users:
+        assertInstance(user, dict)
         
         required_keys = {"id":str, 
                          "name":str, 
