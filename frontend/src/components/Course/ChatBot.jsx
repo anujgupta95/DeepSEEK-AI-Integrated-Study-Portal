@@ -1,24 +1,30 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Loader, Trash2, Download } from "lucide-react"; // Import Trash2 for Clear Chat
+import { Send, Loader, Trash2, Download, Share2, Phone, Mail } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import jsPDF from "jspdf"; // Import jsPDF for PDF generation
+import jsPDF from "jspdf";
 import { useUser } from "@/context/UserContext";
 import "jspdf-autotable"; // For handling tables if needed
-import { marked } from "marked"; // For Markdown parsing
-import { stripHtml } from "string-strip-html"; // To clean HTML if necessary
 
-const ragUrl = import.meta.env.VITE_RAG_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function ChatBot() {
   const { profile } = useUser();
+  const [searchParams] = useSearchParams();
   const [messages, setMessages] = useState([
     { sender: "bot", text: "Hello! How can I assist you today?" },
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for managing dropdown visibility
   const chatEndRef = useRef(null);
+  const moduleId = searchParams.get("moduleId");
+
+  useEffect(() => {
+    handleClearChat();
+  }, [moduleId]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,10 +37,15 @@ export default function ChatBot() {
     setLoading(true);
 
     try {
-      const response = await fetch(`${ragUrl}/ask`, {
+      const response = await fetch(`${apiUrl}/chatbot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: input, option: "Search Documents" }),
+        body: JSON.stringify({
+          query: input,
+          history: messages,
+          moduleId: moduleId,
+          email: profile?.email,
+        }),
       });
 
       const data = await response.json();
@@ -54,82 +65,65 @@ export default function ChatBot() {
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
     doc.setFont("helvetica", "normal");
-    let y = 20; // Start position
-  
-    // Fetch user's name (fallback to "User")
+    let y = 20;
+
     const userName = profile?.name.split(" ")[0] || "User";
-  
-    // Title
+
     doc.setFontSize(16);
     doc.setTextColor(40, 40, 40);
     doc.text("Chat Summary", 105, y, { align: "center" });
     y += 10;
-  
-    // Line separator
+
     doc.setLineWidth(0.5);
     doc.line(10, y, 200, y);
     y += 8;
-  
-    // Format chat messages
+
     messages.forEach(({ sender, text }) => {
       const senderLabel = sender === "user" ? userName : "Alfred";
-  
-      // Bold sender name
-      doc.setFontSize(10); // Smaller font size
+
+      doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
       doc.text(`${senderLabel}:`, 10, y);
       y += 6;
-  
+
       doc.setFont("helvetica", "normal");
-  
+
       if (text.includes("```")) {
-        // Extract code block content
         const codeContentMatch = text.match(/```([\s\S]*?)```/);
         if (codeContentMatch) {
           const codeContent = codeContentMatch[1].trim();
           const codeLines = codeContent.split("\n");
-  
-          // Dynamic height calculation for the code block
           const codeHeight = codeLines.length * 5 + 4;
-  
-          // Draw background for code
-          doc.setFillColor(240, 240, 240); // Light gray background
+
+          doc.setFillColor(240, 240, 240);
           doc.rect(10, y - 2, 180, codeHeight, "F");
-  
-          // Set monospaced font for code
+
           doc.setFont("courier", "normal");
           doc.setFontSize(8);
-  
-          // Render each line of code properly
+
           codeLines.forEach((line) => {
             doc.text(line, 12, y);
-            y += 5; // Move down for the next line
+            y += 5;
           });
-  
-          // Reset font for normal text
+
           doc.setFont("helvetica", "normal");
           doc.setFontSize(10);
         }
       } else {
-        // Split text to fit within the document width (180px)
         const wrappedText = doc.splitTextToSize(text, 180);
         doc.text(wrappedText, 12, y);
-        y += wrappedText.length * 5; // Move down based on text height
+        y += wrappedText.length * 5;
       }
-  
-      y += 6; // Extra spacing between messages
+
+      y += 6;
       if (y > 270) {
-        doc.addPage(); // Add new page if content exceeds page height
+        doc.addPage();
         y = 20;
       }
     });
-  
+
     doc.save("chat.pdf");
   };
-  
-  
-  
-  
 
   const handleClearChat = () => {
     setMessages([
@@ -141,6 +135,24 @@ export default function ChatBot() {
     if (e.key === "Enter" && !loading) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  const handleShareChat = (platform) => {
+    const chatText = messages
+      .map((msg) => `${msg.sender === "user" ? "You" : "Alfred"}: ${msg.text}`)
+      .join("\n\n");
+
+    const encodedChat = encodeURIComponent(chatText);
+
+    if (platform === "whatsapp") {
+      const url = `https://api.whatsapp.com/?text=${encodedChat}`;
+      window.open(url, "_blank");
+    } else if (platform === "email") {
+      const subject = "Chat Summary from Alfred AI Assistant";
+      const body = `Here is the chat summary:\n\n${chatText}`;
+      const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      window.open(url, "_blank");
     }
   };
 
@@ -157,7 +169,6 @@ export default function ChatBot() {
         </Button>
       </div>
 
-      {/* Chat Messages */}
       <div className="flex-1 p-4 overflow-y-auto space-y-3 scrollbar-hide">
         {messages.map((msg, index) => (
           <div
@@ -178,7 +189,6 @@ export default function ChatBot() {
         <div ref={chatEndRef} />
       </div>
 
-      {/* Chat Input and Buttons */}
       <div className="p-2 border-t bg-white flex items-center space-x-2">
         <Input
           type="text"
@@ -201,8 +211,37 @@ export default function ChatBot() {
           className="p-2 bg-green-500 hover:bg-green-600 text-white"
         >
           <Download className="w-4 h-4" />
-          <span className="ml-2">Convert to PDF</span>
+          <span className="ml-2">PDF</span>
         </Button>
+
+        {/* Dropdown for sharing */}
+        <div className="relative">
+          <Button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="p-2 bg-gray-500 hover:bg-gray-600 text-white"
+          >
+            <Share2 className="w-4 h-4" />
+            <span className="ml-2">Share</span>
+          </Button>
+          {isDropdownOpen && (
+            <div className="absolute bottom-full mb-2 right-0 bg-white border border-gray-300 shadow-lg rounded-md w-48">
+              <Button
+                onClick={() => handleShareChat("whatsapp")}
+                className=" w-full text-left p-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+              >
+                <Phone className="w-4 h-4" />
+                <span>WhatsApp</span>
+              </Button>
+              <Button
+                onClick={() => handleShareChat("email")}
+                className=" w-full text-left p-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+              >
+                <Mail className="w-4 h-4" />
+                <span>Email</span>
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 
 export default function CourseCard(props) {
     const course = props.course;
+    const disableGoToCourse = props.disableGoToCourse;
     return (
         <Card key={course.id} className="bg-gray-100 text-black flex flex-col h-full max-w-sm" {...props}>
             <CardHeader>
               <CardTitle className="text-lg">{course.name}</CardTitle>
               {/* <p className="text-sm text-gray-600">NEW COURSE</p> */}
             </CardHeader>
+            {!disableGoToCourse && (
             <CardContent className="p-4 flex flex-col flex-grow">
               <div className="flex-grow"></div>
               <div className="mt-auto">
@@ -20,6 +22,7 @@ export default function CourseCard(props) {
                 </Link>
               </div>
             </CardContent>
+            )}
           </Card>
     );
 }

@@ -5,40 +5,22 @@ from flask_jwt_extended import JWTManager
 from flask_restful import Api
 from mongoengine import connect, disconnect, get_db
 from api.controllers import *  # Import controllers
-from api.models import User, Course, Announcement, Week, Module, TestCase, Question, CodeSubmission, ChatHistory  # Import models
+from api.models import User, Course, Announcement, Week, Module, TestCase, Question, ChatHistory  # Import models
 from dotenv import load_dotenv
 import os
 from api.seed_db import seed_database
+import requests
 
 load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 
 # Enable CORS for specified origins
-CORS(app, supports_credentials=True, origins=["https://deepseek-fe.vercel.app", "http://localhost:3000", "*"])
+CORS(app, supports_credentials=True, origins=["*"])
 
 # Configuration
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Ensure this is secure
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY", "your_default_secret_key")  # Set a secret key for session management
-
-# @app.route("/test-auth", methods=["GET"])
-# # @jwt_required()  # Ensure the user is authenticated
-# def test_auth():
-#     # Retrieve Authorization header
-#     auth_header = request.headers.get("Authorization", "No Authorization Header")
-
-#     # Retrieve session data (if exists)
-#     session_data = dict(session) if session else "Session is empty"
-
-#     # Get the current user identity from the JWT
-#     current_user = get_jwt_identity()
-
-#     return jsonify({
-#         "Authorization Header": auth_header,
-#         "Session Data": session_data,
-#         "Authenticated User": current_user
-#     })
-
 
 # Initialize extensions
 bcrypt = Bcrypt(app)
@@ -91,9 +73,7 @@ api.add_resource(AdminStatisticsAPI, '/admin-statistics')
 # Video Transcript Route
 api.add_resource(VideoTranscriptAPI, '/video-transcript')
 
-# {
-#   "video_ids": ["VIDEO_ID_1", "VIDEO_ID_2", "VIDEO_ID_3"]
-# }
+
 
 # Register Flask routes
 app.register_blueprint(course_bp)

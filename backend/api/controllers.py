@@ -3,12 +3,56 @@ from flask import Blueprint, make_response, request, jsonify, session
 from flask_restful import Resource
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, unset_jwt_cookies
 from youtube_transcript_api import YouTubeTranscriptApi
-from api.models import User, Course, Announcement, Week, Module, TestCase, Question, VideoTranscript, ChatHistory, CodeSubmission # Import models
+from api.models import User, Course, Announcement, Week, Module, TestCase, Question, VideoTranscript, ChatHistory, ChatQuestions # Import models
 from bson import ObjectId
 import re
+import os
+import requests
+import subprocess
+import sys
+from mongoengine.errors import DoesNotExist
 
 
-# Create a Blueprint
+def get_ist_time():
+    return datetime.now() + timedelta(hours=5, minutes=30)
+
+def process_history(history):
+    # Remove the first entry of the history
+    history = history[1:]
+    
+    # Prepare the formatted result
+    formatted_history = []
+
+    # Iterate through the history and pair user query with bot response
+    for i in range(0, len(history), 2):
+        if i + 1 < len(history):  # Ensure there is a corresponding bot response
+            query = history[i]['text']  # User's message
+            answer = history[i + 1]['text']  # Bot's response
+            formatted_history.append({
+                'query': query,
+                'answer': answer
+            })
+    
+    return formatted_history
+
+def get_module_type(moduleId):
+    # Fetch the module from the database using the moduleId
+    module = Module.objects(id=moduleId).first()
+    
+    if not module:
+        return "Module not found"
+    
+    prompt_option = ""
+
+    if module.isGraded:
+        prompt_option = "graded"
+    elif module.type == "assignment":
+        prompt_option = "practice"
+    else:
+        prompt_option = "learning"
+    
+    return prompt_option
+
 course_bp = Blueprint('course', __name__)
 
 class Login(Resource):
@@ -33,9 +77,8 @@ class Login(Resource):
                 )
                 user.save()
             
-            # Flask session creation to store user info
-            session['userId'] = str(user.id)  # Store the user ID in the session
-
+            user.lastLogin = get_ist_time()
+            user.save()
             return make_response(jsonify({
                 'message': 'Login successful',
                 'userId': str(user.id),  # Changed user_id to userId
@@ -43,11 +86,11 @@ class Login(Resource):
                 'email': user.email,
                 'name': user.name,
                 'picture': user.profilePictureUrl,
+                'lastLogin': user.lastLogin
             }), 200)
         except Exception as e:
             return make_response(jsonify({"error": "Something went wrong", "message": str(e)}), 500)
 
-# Create a Blueprint
 user_bp = Blueprint('user', __name__)
 
 class UsersAPI(Resource):
@@ -111,7 +154,6 @@ class UsersAPI(Resource):
 
         except Exception as e:
             return make_response(jsonify({"error": "Something went wrong", "message": str(e)}), 500)
-
 
 class RegisteredCourses(Resource):
     def get(self):
@@ -198,7 +240,6 @@ class RegisteredCourses(Resource):
         except Exception as e:
             return make_response(jsonify({"error": "Something went wrong", "message": str(e)}), 500)
 
-
 class CourseAPI(Resource):
     def get(self, courseId=None):
         try:
@@ -245,6 +286,7 @@ class CourseAPI(Resource):
                                 "language": module.language,
                                 "description": module.description,
                                 "codeTemplate": module.codeTemplate,
+                                "hint": module.hint or "No hint available.",  # Added hint for coding modules
                                 "testCases": [
                                     {"inputData": tc.inputData, "expectedOutput": tc.expectedOutput} for tc in module.testCases
                                 ]
@@ -305,21 +347,6 @@ class CourseAPI(Resource):
         except Exception as e:
             return make_response(jsonify({'error': 'Something went wrong', 'message': str(e)}), 500)
         
-
-# class YouTubeTranscriptAPI(Resource):
-#     def get(self):
-#         try:
-#             videoId = request.args.get('videoId')
-#             if not videoId:
-#                 return jsonify({"error": "Video ID is required"}), 400
-
-#             transcript = YouTubeTranscriptApi.get_transcript(videoId)
-#             return jsonify({"transcript": transcript})
-
-#         except Exception as e:
-#             return jsonify({"error": str(e)}), 500
-
-
 # Helper function to extract video ID from YouTube URL
 def extract_video_id(video_url):
     """
@@ -391,51 +418,118 @@ class ChatbotInteractionAPI(Resource):
         try:
             data = request.get_json()
             query = data.get("query")
-            option = data.get("option")
-            sessionId = data.get("sessionId")
+            history = data.get("history")
+            email = data.get("email")
+            moduleId = data.get("moduleId")
+            
+            user = User.objects(email=email).first()
+            if not user:
+                return {"error": "User not found"}, 404
+            
+            if not query or not history:
+                return {"error": "Query and history are required"}, 400
 
-            if not query or not option:
-                return jsonify({"error": "Query and option are required"}), 400
+            
+            # Retrieve the module based on moduleId
+            module = Module.objects(id=moduleId).first()
+            
+            # Look for existing ChatQuestions entry for the same user, date, course, and week
+            existing_question_entry = ChatQuestions.objects(
+                user=user,
+                date=get_ist_time().date(),
+                course=module.week.course,
+                week=module.week
+            ).first()
 
-            # Fetch chat history only if sessionId is present
-            chatHistory = []
-            if sessionId:
-                chatHistory = ChatHistory.objects(sessionId=sessionId).order_by('timestamp')
+            # If an entry exists, append the new question to the existing array of questions
+            if existing_question_entry:
+                existing_question_entry.update(push__questions=query)
+                # return {"message": "Question added to existing entry"}, 200
+            else:
+                # If no entry exists, create a new entry
+                new_question_entry = ChatQuestions(
+                    user=user, 
+                    week=module.week,
+                    course=module.week.course,
+                    date=get_ist_time().date(),
+                    questions=[query],  # Initialize with the current question
+                )
+                new_question_entry.save()
+                # return {"message": "New question entry created"}, 201
 
-            responseText = "RAG API response based on history"  # Simulating API response
-
-            # Save the new chat entry in the database
-            chatEntry = ChatHistory(sessionId=sessionId, query=query, response=responseText)
-            chatEntry.save()
-
-            # Prepare response data ensuring it is serializable
-            response = {
-                "sessionId": sessionId,
-                "question": query,
-                "answer": responseText,
-                "chatHistory": [
-                    {
-                        "query": chat.query,
-                        "answer": chat.response,
-                        "timestamp": chat.timestamp.isoformat(),  # Convert datetime to string
-                        "user": self.serialize_user(chat.user)  # Serialize the user reference
-                    }
-                    for chat in chatHistory
-                ]
+            # Optionally, you could also handle the response from an external service
+            data = {
+                'query' : query,
+                'history' : process_history(history),
+                'prompt_option' : get_module_type(moduleId)
             }
+            
+            response = requests.post(os.getenv("RAG_API") + "/ask", json=data)
 
-            return jsonify(response)
-
+            # Check the status code and the response
+            if response.status_code == 200:
+                return response.json(), 200
+            else:
+                return response.text, response.status_code
+            
         except Exception as e:
             # Return error with details
-            return jsonify({"error": "Something went wrong", "message": str(e)}), 500
+            return {"error": "Something went wrong", "message": str(e)}, 500
 
+        
     def serialize_user(self, user):
-        # Assuming you want to send user 'id' and 'name', adjust this as necessary
+        # Serialize the user object
         if user:
-            return {"id": str(user.id), "name": user.name}  # Change this to the fields you need
+            return {
+                "id": str(user.id),
+                "name": user.name,
+                "email": user.email,
+                "role": user.role,
+                "profilePictureUrl": user.profilePictureUrl
+            }
         return None
 
+class FetchWeekwiseQuestionsAPI(Resource):
+    def get(self):
+        try:
+            # Get query parameter for the course
+            courseId = request.args.get('courseId')
+            course = Course.objects(id=courseId).first()
+            
+            # Ensure the 'course' parameter is provided
+            if not course:
+                return {"error": "Course is required"}, 400
+            
+            # Retrieve all ChatQuestions that match the given course
+            questions = ChatQuestions.objects(course=course)
+            
+            if not questions:
+                return {"message": "No questions found for the given course"}, 404
+            
+            # Group questions by week
+            weekwise_questions = {}
+            
+            for question_entry in questions:
+                week = question_entry.week
+                if week not in weekwise_questions:
+                    weekwise_questions[week] = []
+                
+                # Append the questions for each week
+                weekwise_questions[week].extend(question_entry.questions)
+            
+            # Prepare the result to return, sorted by week
+            result = []
+            for week, questions_list in sorted(weekwise_questions.items()):
+                result.append({
+                    'week': week,
+                    'questions': questions_list
+                })
+            
+            return {"weekwise_questions": result}, 200
+
+        except Exception as e:
+            # Return error if something went wrong
+            return {"error": "Something went wrong", "message": str(e)}, 500
 
 class UserStatisticsAPI(Resource):
     def get(self, userId):
@@ -504,7 +598,6 @@ class RunCodeAPI(Resource):
         except Exception as e:
             return {"error": "Something went wrong", "message": str(e)}, 500
 
-
 class AdminStatisticsAPI(Resource):
     def get(self):
         try:
@@ -518,3 +611,302 @@ class AdminStatisticsAPI(Resource):
 
         except Exception as e:
             return {"error": "Something went wrong", "message": str(e)}, 500
+        
+@course_bp.route('/submit/code', methods=['POST'])
+def submit_code():
+    """
+    API endpoint to handle code submission.
+    Expects JSON payload with:
+    - email: Email of the user submitting the code
+    - moduleId: ID of the module (coding problem)
+    - code: The submitted code as a string
+    """
+    try:
+        # Parse the request data
+        data = request.get_json()
+        email = data.get('email')
+        module_id = data.get('moduleId')
+        submitted_code = data.get('code')
+
+        if not email or not module_id or not submitted_code:
+            return jsonify({"error": "Missing required fields (email, moduleId, code)"}), 400
+
+        # Fetch the user from the database using email
+        user = User.objects(email=email).first()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Fetch the module (coding problem) from the database
+        module = Module.objects(id=module_id).first()
+        if not module or module.type != "coding":
+            return jsonify({"error": "Invalid module or module is not a coding problem"}), 404
+
+        # Fetch the test cases for the module
+        test_cases = module.testCases
+        if not test_cases:
+            return jsonify({"error": "No test cases found for this module"}), 404
+
+        # Validate the syntax of the submitted code
+        try:
+            compile(submitted_code, '<string>', 'exec')
+        except SyntaxError as e:
+            return jsonify({
+                "error": "Syntax error in the submitted code",
+                "syntaxError": str(e),
+                "line": e.lineno,
+                "offset": e.offset,
+                "message": e.msg
+            }), 400
+
+        # Prepare the results
+        results = []
+        all_passed = True
+        passed_count = 0  # Counter for passed test cases
+
+        # Execute the code for each test case
+        for test_case in test_cases:
+            input_data = test_case.inputData
+            expected_output = test_case.expectedOutput
+
+            try:
+                # Execute the user's code with the input data
+                process = subprocess.run(
+                    [sys.executable, "-c", submitted_code],
+                    input=input_data,
+                    text=True,
+                    capture_output=True
+                )
+
+                # Get the output from the executed code
+                actual_output = process.stdout.strip()
+
+                # Compare the actual output with the expected output
+                is_correct = (actual_output == expected_output)
+                if is_correct:
+                    passed_count += 1  # Increment passed count
+                else:
+                    all_passed = False
+
+                # Store the result for this test case
+                results.append({
+                    "input": input_data,
+                    "expectedOutput": expected_output,
+                    "actualOutput": actual_output,
+                    "isCorrect": is_correct
+                })
+
+            except Exception as e:
+                # Handle execution errors (e.g., runtime errors)
+                return jsonify({"error": f"Code execution failed: {str(e)}"}), 500
+
+        # # Save the submission to the database
+        # code_submission = CodeSubmission(
+        #     user=user,  # Reference to the User document
+        #     question=None,  # You can embed the question if needed
+        #     submittedCode=submitted_code,
+        #     output=str(results),  # Store the results as a string
+        #     isCorrect=all_passed
+        # )
+        # code_submission.save()
+
+        # Update the user's attempted questions or modules if needed
+        if module not in user.modulesCompleted:
+            user.modulesCompleted.append(module)
+            user.save()
+
+        # Return the results to the user
+        return jsonify({
+            "message": "Code submitted successfully",
+            "allPassed": all_passed,
+            "passedCount": passed_count,  # Number of test cases passed
+            "totalTestCases": len(test_cases),  # Total number of test cases
+            "results": results
+        }), 200
+
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
+@course_bp.route('/debug/code', methods=['POST'])
+def debug_code2():
+    """
+    API endpoint to debug code submissions.
+    Expects JSON payload with:
+    - email: Email of the user submitting the code
+    - moduleId: ID of the module (coding problem)
+    - code: The submitted code as a string
+    """
+    try:
+        # Parse the request data
+        data = request.get_json()
+        email = data.get('email')
+        module_id = data.get('moduleId')
+        submitted_code = data.get('code')
+
+        if not email or not module_id or not submitted_code:
+            return jsonify({"error": "Missing required fields (email, moduleId, code)"}), 400
+
+        # Fetch the user from the database using email
+        user = User.objects(email=email).first()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Fetch the module (coding problem) from the database
+        module = Module.objects(id=module_id).first()
+        if not module or module.type != "coding":
+            return jsonify({"error": "Invalid module or module is not a coding problem"}), 404
+        
+
+        debug_prompt = f"""
+You are 'Alfred', an expert Python programmer and debugging assistant.
+Analyze the provided Python code and identify any errors or issues.
+Respond with a concise explanation in **two lines only**.
+
+**Code:** {submitted_code}
+
+**Question:** {module.description}
+"""
+        
+        response = requests.post("https://api.groq.com/openai/v1/chat/completions", json={
+            "model": "llama-3.3-70b-versatile",
+            "messages": [{
+                "role": "user",
+                "content": debug_prompt
+            }]
+        },
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}"
+        })
+
+        # Check if the RAG API responded successfully
+        if response.status_code == 200:
+            return jsonify(response.json()), 200
+        else:
+            # If the RAG API response was not successful, return the error response from RAG API
+            return jsonify({"error": "Failed to debug code", "message": response.text}), response.status_code
+
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+    
+
+@course_bp.route('/dashboard/user/questions', methods=['GET'])
+def get_coursewise_questions():
+    try:
+        # Get user email from request
+        user_email = request.args.get('email') or request.json.get('email')
+        
+        if not user_email:
+            return jsonify({'error': 'Email is required'}), 400
+        
+        # Get the user object
+        user = User.objects.get(email=user_email)
+        
+        # Query all ChatQuestions for this user, sorted by date descending
+        chat_questions = ChatQuestions.objects(user=user).order_by('-date')
+        
+        # Dictionary to group by course
+        courses = {}
+        
+        for cq in chat_questions:
+            course_id = str(cq.course.id)
+            
+            if course_id not in courses:
+                courses[course_id] = {
+                    'course_name': cq.course.name,
+                    'questions': []
+                }
+            
+            # Add all questions with their dates
+            for question in cq.questions:
+                courses[course_id]['questions'].append({
+                    'question': question,
+                    'date': cq.date.isoformat()
+                })
+        
+        # Sort questions within each course by date descending
+        for course in courses.values():
+            course['questions'].sort(key=lambda x: x['date'], reverse=True)
+        
+        return jsonify({
+            'success': True,
+            'data': courses
+        })
+        
+    except DoesNotExist:
+        return jsonify({'error': 'User not found'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+@course_bp.route('/top-questions', methods=['POST'])
+def get_top_questions():
+    """
+    API endpoint to debug code submissions.
+    Expects JSON payload with:
+    - email: Email of the user submitting the code
+    - moduleId: ID of the module (coding problem)
+    - code: The submitted code as a string
+    """
+    try:
+        # Parse the request data
+        data = request.get_json()
+        email = data.get('email')
+        courseId = data.get('courseId')
+
+        if not email or not courseId:
+            return jsonify({"error": "Missing required fields (email, courseId)"}), 400
+
+        # Fetch the user from the database using email
+        user = User.objects(email=email).first()
+        if not user or user.role != "instructor":
+            return jsonify({"error": "User not found"}), 404
+
+        # Fetch the module (coding problem) from the database
+        course = Course.objects(id=courseId).first()
+        if not course:
+            return jsonify({"error": "Invalid courseId"}), 404
+        
+        questions = ChatQuestions.objects(course=course).all()
+        all_questions = []
+        for question in questions:
+            all_questions.extend(question.questions)
+        
+        
+        prompt = f"""
+Analyze these programming questions and return the top 5 most frequent topics. Respond with ONLY a Python list literal containing exactly 5 unquoted items separated by commas, formatted exactly like this example:
+Python functions, Lists, Error handling, OOP, File handling
+STRICT REQUIREMENTS: "
+1. No quotation marks of any kind
+2. No backslashes or escape characters
+3. No counts or numbering
+4. No additional text or commentary
+5. Exactly 5 comma-separated
+6. Each topic must be 2-4 words in lowercase/uppercase
+If you include any quotes, backslashes, or other formatting, the response is wrong.\n\n
+QUESTIONS: {"\n - ".join(all_questions)}
+"""
+        
+        response = requests.post("https://api.groq.com/openai/v1/chat/completions", json={
+            "model": "llama-3.3-70b-versatile",
+            "messages": [{
+                "role": "user",
+                "content": prompt
+            }]
+        },
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {os.getenv('GROQ_API_KEY')}"
+        })
+
+        # Check if the RAG API responded successfully
+        if response.status_code == 200:
+            return jsonify({
+                "allQuestions" : all_questions,
+                "topQuestions" : response.json()["choices"][0]["message"]["content"].split(", ")
+                }), 200
+        else:
+            # If the RAG API response was not successful, return the error response from RAG API
+            return jsonify({"error": "Failed to get hot topics", "message": response.text}), response.status_code
+
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500

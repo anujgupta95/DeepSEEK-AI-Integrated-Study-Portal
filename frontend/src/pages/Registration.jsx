@@ -27,12 +27,12 @@ export default function Registration() {
         if (!response.ok) throw new Error("Failed to fetch registered courses");
         const data = await response.json();
         setRegisteredCourses(data.registeredCourses || []);
-        toast({
-          title: "Already Registered",
-          description: "You have already registered for courses.",
-          variant: "destructive",
-          duration: 4000,
-        });
+        // toast({
+        //   title: "Already Registered",
+        //   description: "You have already registered for courses.",
+        //   variant: "destructive",
+        //   duration: 4000,
+        // });
       } catch (error) {
         toast({
           title: "Error fetching registered courses",
@@ -50,6 +50,12 @@ export default function Registration() {
 
   useEffect(() => {
     if (registeredCourses && registeredCourses.length > 0) {
+        toast({
+          title: "Already Registered",
+          description: "You have already registered for courses.",
+          variant: "destructive",
+          duration: 4000,
+        });
       navigate("/course"); // Redirect if user is already registered
     }
   }, [registeredCourses, navigate]);

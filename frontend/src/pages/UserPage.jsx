@@ -53,14 +53,14 @@ export default function UserPage() {
   return (
     <div className="max-w-5xl mx-auto p-6">
       {/* User Profile Card */}
-      <Card className="mb-6">
+      <Card className="mb-6 card-color">
         <CardHeader className="flex flex-row items-center gap-4">
           <Avatar className="w-16 h-16">
             <AvatarImage src={user.profilePictureUrl || "/default-avatar.png"} alt={user.name} />
             <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle className="text-2xl font-bold">{user.name}</CardTitle>
+            <CardTitle className="text-2xl">{user.name}</CardTitle>
             <p className="text-gray-500">{user.email}</p>
             <span className="px-3 py-1 mt-2 inline-block text-sm bg-gray-200 rounded-full">
               {user.role.toUpperCase()}

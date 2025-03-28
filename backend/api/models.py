@@ -1,7 +1,8 @@
 from mongoengine import Document, EmbeddedDocument, fields, connect, CASCADE
-from datetime import datetime
+from datetime import datetime, timedelta
 
-
+def get_ist_time():
+    return datetime.now() + timedelta(hours=5, minutes=30)
 # -----------------------------
 # User Model
 # -----------------------------
@@ -16,6 +17,7 @@ class User(Document):
     modulesCompleted = fields.ListField(fields.ReferenceField('Module'))  # Corrected to camelCase
     averageScore = fields.FloatField()  # Corrected to camelCase
     active = fields.BooleanField(default=True)  # Add the 'active' field
+    lastLogin = fields.DateTimeField(default=get_ist_time(), required=True)
 
 # -----------------------------
 # Course Model
@@ -34,7 +36,7 @@ class Course(Document):
 class Announcement(Document):
     course = fields.ReferenceField(Course, required=True, reverse_delete_rule=CASCADE)
     message = fields.StringField(required=True, max_length=500)
-    date = fields.DateTimeField(default=datetime.now)
+    date = fields.DateTimeField(default=get_ist_time())
 
 # -----------------------------
 # Week Model
@@ -59,7 +61,8 @@ class Question(EmbeddedDocument):  # Ensure it is an EmbeddedDocument
     type = fields.StringField(required=True, choices=["mcq", "msq", "nat"])
     options = fields.ListField(fields.StringField())  # Store as an array
     correctAnswer = fields.StringField(required=True, max_length=200)
-    hint = fields.StringField(max_length=500) 
+    hint = fields.StringField(max_length=500)  # Added hint field
+
 
 
 # -----------------------------
@@ -78,6 +81,7 @@ class Module(Document):
     description = fields.StringField(max_length=500)
     codeTemplate = fields.StringField()
     testCases = fields.EmbeddedDocumentListField(TestCase)  # Embedded Test Cases
+    hint = fields.StringField(max_length=500, default="No hint available.")  # Added hint for coding modules
 
     # Assignment type
     isGraded = fields.BooleanField(default=False)
@@ -88,29 +92,28 @@ class Module(Document):
     docUrl = fields.StringField(max_length=300)
 
 
+
 class ChatHistory(Document):
     # Modified to include sessionId as per the controller route
     sessionId = fields.StringField(required=True, max_length=100)  # Assuming sessionId is a string
     user = fields.ReferenceField('User', required=True, reverse_delete_rule=CASCADE)
     query = fields.StringField(required=True, max_length=500)
     response = fields.StringField(required=True, max_length=1000)
-    timestamp = fields.DateTimeField(default=datetime.now)
+    timestamp = fields.DateTimeField(default=get_ist_time())
 
     
-
-class CodeSubmission(Document):
+class ChatQuestions(Document):
     user = fields.ReferenceField(User, required=True, reverse_delete_rule=CASCADE)
-    question = fields.EmbeddedDocumentField(Question)  #  Store question inside submission
-    submittedCode = fields.StringField(required=True)
-    output = fields.StringField()
-    isCorrect = fields.BooleanField(default=False)
-    timestamp = fields.DateTimeField(default=datetime.now)
+    course = fields.ReferenceField(Course, required=True, reverse_delete_rule=CASCADE)
+    week = fields.ReferenceField(Week, required=True, reverse_delete_rule=CASCADE)
+    date = fields.DateField(default=get_ist_time().date())
+    questions = fields.ListField(fields.StringField())
 
 
 class VideoTranscript(Document):
     videoID = fields.StringField(required=True, max_length=50, unique=True)  # Unique YouTube video ID
     transcript = fields.ListField(fields.DictField(), required=True)  # Store transcript as a list of dictionaries
-    fetched_at = fields.DateTimeField(default=datetime.now)  # Timestamp for when the transcript was fetched
+    fetched_at = fields.DateTimeField(default=get_ist_time())  # Timestamp for when the transcript was fetched
 
     meta = {
         'collection': 'video_transcripts',  # Explicit collection name in MongoDB

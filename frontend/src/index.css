@@ -7,6 +7,10 @@
   }
 }
 
+*{
+  font-family: sans-serif;
+}
+
 /* Hide scrollbar for Chrome, Safari, and Edge */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
@@ -15,4 +19,17 @@
 /* Hide scrollbar for Firefox */
 .scrollbar-hide {
   scrollbar-width: none;
+}
+
+.btn-color{
+  background-color: #7D0A0A;
+  color: white;
+}
+
+.bg-color {
+  background-color: #EAD196 ;
+}
+
+.card-color {
+  background-color: #E4E9F7 ;
 }
