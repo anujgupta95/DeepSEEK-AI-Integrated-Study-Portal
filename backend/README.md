@@ -1,68 +1,160 @@
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+---
 
-git add .
-git commit -m "message"
-git push origin main
+# 🚀 Deepseek - Seek Portal AI Agent (RAG & AI)
 
+A **Retrieval-Augmented Generation (RAG) system** built with **FastAPI** and **LangChain** to provide intelligent responses based on course content from PDF documents.  
 
-git push old-origin main
-git push new-origin main
+---
 
+## 🌟 Features  
 
+✅ **RAG System** – Context-aware responses using **FAISS** vector store  
+✅ **Multiple Learning Modes**:  
+   - 📝 **Graded Questions** – Hints only  
+   - 🎯 **Practice Mode** – Guided hints  
+   - 📖 **Learning Mode** – Detailed explanations  
+✅ **🛠️ Code Debugging** – Python code analysis endpoint  
+✅ **📂 PDF Management** – Persistent vector storage of course materials  
+✅ **💬 Conversation History** – Multi-turn interactions with context  
 
-# Add the folder to your main repo
-git add backend
-git commit -m "Added backend code"
-git push origin main
+---
 
+## 📌 Prerequisites  
 
+Ensure you have the following installed:  
 
+- **Python 3.7+**  
+- **[Groq API Key](https://console.groq.com/)**  
+- **[Google API Key](https://cloud.google.com/)**  
+- **Course PDFs** stored in `./pdf_files`  
 
+---
 
+## ⚡ Installation  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fpython%2Fflask3&demo-title=Flask%203%20%2B%20Vercel&demo-description=Use%20Flask%203%20on%20Vercel%20with%20Serverless%20Functions%20using%20the%20Python%20Runtime.&demo-url=https%3A%2F%2Fflask3-python-template.vercel.app%2F&demo-image=https://assets.vercel.com/image/upload/v1669994156/random/flask.png)
-
-# Flask + Vercel
-
-This example shows how to use Flask 3 on Vercel with Serverless Functions using the [Python Runtime](https://vercel.com/docs/concepts/functions/serverless-functions/runtimes/python).
-
-## Demo
-
-https://flask-python-template.vercel.app/
-
-## How it Works
-
-This example uses the Web Server Gateway Interface (WSGI) with Flask to enable handling requests on Vercel with Serverless Functions.
-
-## Running Locally
+### 1️⃣ Clone the Repository  
 
 ```bash
-npm i -g vercel
-vercel dev
+git clone https://github.com/21f3002975/seek-portal-ai-agent.git
+cd seek-portal-ai-agent/rag
 ```
 
-Your Flask application is now available at `http://localhost:3000`.
+### 2️⃣ Set Up Virtual Environment  
 
-## One-Click Deploy
+```bash
+python -m venv venv
+source venv/bin/activate  # Linux/MacOS
+venv\Scripts\activate  # Windows
+```
 
-Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
+### 3️⃣ Install Dependencies  
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fpython%2Fflask3&demo-title=Flask%203%20%2B%20Vercel&demo-description=Use%20Flask%203%20on%20Vercel%20with%20Serverless%20Functions%20using%20the%20Python%20Runtime.&demo-url=https%3A%2F%2Fflask3-python-template.vercel.app%2F&demo-image=https://assets.vercel.com/image/upload/v1669994156/random/flask.png)
+```bash
+pip install -r requirements.txt
+```
+
+### 4️⃣ Configure Environment Variables  
+
+Create a `.env` file and add:  
+
+```env
+GROQ_API_KEY=your_groq_api_key
+GOOGLE_API_KEY=your_google_api_key
+```
+
+---
+
+## 🚀 Usage  
+
+### 1️⃣ Start the Server  
+
+```bash
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 2️⃣ Available API Endpoints  
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/ask` | **POST** | Query endpoint with **graded**, **practice**, or **learning** mode |
+| `/debug/code` | **POST** | Python code debugging assistance |
+| `/top-questions` | **POST** | Analyze question patterns |
+| `/pdfs` | **GET** | List indexed PDFs |
+
+---
+
+## 📖 API Reference  
+
+### 🔹 **POST /ask**  
+💡 **Request:**  
+
+```json
+{
+  "query": "What is merge sort?",
+  "history": [],
+  "prompt_option": "learning"
+}
+```
+
+💡 **Response:**  
+
+```json
+{
+  "response": "Formatted answer with resources...",
+  "updated_history": []
+}
+```
+
+---
+
+### 🔹 **POST /debug/code**  
+💡 **Request:**  
+
+```json
+{
+  "question": "What’s wrong with this code?",
+  "code": "def example(): pass"
+}
+```
+
+---
+
+### 🔹 **GET /pdfs**  
+💡 **Response:**  
+
+```json
+{
+  "pdfs": ["machine-learning.pdf", "algorithms.pdf"]
+}
+```
+
+---
+
+## ⚙️ Configuration  
+
+### 🔹 Environment Variables  
+
+| Variable | Description |
+|----------|-------------|
+| `GROQ_API_KEY` | Groq Cloud API key |
+| `GOOGLE_API_KEY` | Google Generative AI credentials |
+
+### 🔹 PDF Storage  
+
+- Place all PDFs in the `./pdf_files` directory  
+- FAISS vector store automatically **builds on first run**  
+
+---
+
+## 🚢 Deployment  
+
+### 🔹 **Run on Production**  
+
+```bash
+uvicorn app:app --host 0.0.0.0 --port 8000
+```
+---
+
+## 👥 Contributors  
+- [Jalaj Trivedi](https://github.com/jt232003) 🚀  
+- [Niraj Kumar](https://github.com/nirajkumar1002) 🚀  
