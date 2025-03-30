@@ -1,6 +1,6 @@
-# 🌟 Deepseek - Seek Portal AI Agent 🌟  
+# 🌟 DeepSEEK - Seek Portal AI Agent 🌟  
 
-Welcome to **Deepseek - Seek Portal AI Agent**, a powerful AI-driven system that combines **Retrieval-Augmented Generation (RAG)**, **AI-powered interactions**, and a **seamless frontend experience**. 🚀  
+Welcome to **DeepSEEK - Seek Portal AI Agent**, a powerful AI-driven system that combines **Retrieval-Augmented Generation (RAG)**, **AI-powered interactions**, and a **seamless frontend experience**. 🚀  
 
 📌 **Live Demo:**  
 🔗 [Frontend Portal](https://deepseek.anujg.me/)  
@@ -21,9 +21,23 @@ Welcome to **Deepseek - Seek Portal AI Agent**, a powerful AI-driven system that
 
 ---
 
-# 🚀 Getting Started  
+## There are two options to access the application:
 
-## 🔹 1️⃣ Clone the Repository  
+- Option 1: via a live demo of the frontend on Vercel  
+- Option 2: via running the code locally   
+     
+## 🌍 Option 1 - Live Demo  
+🔗 [Access the application here](https://deepseek.anujg.me/)  
+
+You can either use the above link to access the portal or follow the steps below to run it locally.
+
+---
+
+## Option 2 - Run Locally
+
+🚀 Getting Started  
+
+###  1️⃣ Clone the Repository  
 
 ```sh
 git clone https://github.com/21f3002975/seek-portal-ai-agent.git
