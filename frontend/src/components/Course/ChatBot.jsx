@@ -2,7 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Loader, Trash2, Download, Share2, Phone, Mail } from "lucide-react";
+import {
+  Send,
+  Loader,
+  Trash2,
+  Download,
+  Share2,
+  Phone,
+  Mail,
+} from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import jsPDF from "jspdf";
 import { useUser } from "@/context/UserContext";
@@ -151,7 +159,9 @@ export default function ChatBot() {
     } else if (platform === "email") {
       const subject = "Chat Summary from Alfred AI Assistant";
       const body = `Here is the chat summary:\n\n${chatText}`;
-      const url = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      const url = `mailto:?subject=${encodeURIComponent(
+        subject
+      )}&body=${encodeURIComponent(body)}`;
       window.open(url, "_blank");
     }
   };
@@ -178,11 +188,27 @@ export default function ChatBot() {
             }`}
           >
             <div
-              className={`rounded-lg px-3 py-2 text-white text-sm max-w-[80%] ${
+              className={`rounded-lg px-3 py-2 text-white text-sm max-w-[90%] lg:max-w-[70%] break-words word-break ${
                 msg.sender === "user" ? "bg-blue-500" : "bg-gray-700"
               }`}
             >
-              <ReactMarkdown>{msg.text}</ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  code({ node, inline, className, children, ...props }) {
+                    return inline ? (
+                      <code className="bg-gray-800 text-white px-1 rounded">
+                        {children}
+                      </code>
+                    ) : (
+                      <pre className="overflow-x-auto p-2 bg-gray-900 text-white rounded">
+                        <code {...props}>{children}</code>
+                      </pre>
+                    );
+                  },
+                }}
+              >
+                {msg.text}
+              </ReactMarkdown>
             </div>
           </div>
         ))}

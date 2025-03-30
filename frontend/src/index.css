@@ -33,3 +33,10 @@
 .card-color {
   background-color: #E4E9F7 ;
 }
+
+.break-words {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
