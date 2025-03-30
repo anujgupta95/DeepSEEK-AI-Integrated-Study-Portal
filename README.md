@@ -1,38 +1,57 @@
-# Software Engineering Project - AI Agent for SEEK
+# 🌟 Deepseek - Seek Portal AI Agent (Backend) 🌟
 
-## **Deepseek Portal**  
+Welcome to the **Deepseek - Seek Portal AI Agent** frontend repository! 🚀 
 
-### **Overview**  
-**Deepseek Portal** is a cutting-edge **educational platform** designed to enhance learning through **AI-driven course assistance, coding execution, and interactive analytics**.  
-
-### **Key Features**  
-- **User Authentication** – Secure login and seamless onboarding.  
-- **Course Management** – Enroll in courses, access structured content.  
-- **AI Chatbot** – Get academic assistance in real time.  
-- **Code Execution & Debugging** – Validate and debug assignments efficiently.  
-- **Learning Analytics** – Track user progress and analyze performance.  
-- **Automated Transcripts** – Fetch and process YouTube captions.  
+📌 **Live Demo:** [Deepseek Portal API](https://api.deepseek.anujg.me)  
 
 ---
 
-## **Instructions to Run the App**  
+## 🛠️ **Tech Stack**  
 
-### **1. Set Up the Virtual Environment**  
-```bash
+| **Category**  | **Technology Used**  |
+|--------------|------------------|
+| **Backend Framework** | Flask (REST API) |
+| **Database** | MongoDB (with PyMongo & MongoEngine) |
+| **Deployment** | Vercel |
+| **APIs** | YouTube Transcript API, GROQ AI API |
+
+---
+
+## 🚀 **Getting Started**  
+
+### 🔹 **1. Clone the Repository**  
+```sh
+git clone https://github.com/21f3002975/seek-portal-ai-agent.git
+cd seek-portal-ai-agent/backend
+```
+
+### 🔹 **2. Set Up a Virtual Environment**  
+```sh
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-### **2. Run the Backend Application**  
-```bash
+
+### 🔹 **3. Set Up Environment Variables**  
+Create a `.env` file in the root directory and configure:  
+```env
+MONGO_URI=
+RAG_API_URL=
+GROQ_API=
+```
+Replace with your actual credentials.
+
+### 🔹 **4. Run the Backend Server**  
+```sh
 python -m api.app
 ```
+📌 Your API will now be live at **`http://localhost:5000/`**.
 
 ---
 
-## **Libraries Used**  
-The following dependencies are required for the application:  
+## 📦 **Dependencies**  
 
+The backend uses the following Python libraries:  
 ```plaintext
 Flask==3.0.0
 Flask-Cors==4.0.0
@@ -50,19 +69,10 @@ requests
 
 ---
 
-## **Contributors**  
-| Name | Roll Number |
-|------|------------|
-| Ajay Thiagarajan | 21f1003242 |
-| AJR Vasu | 21f3002975 |
-| Anand K Iyer | 21f1001185 |
-| Anuj Gupta | 21f3001598 |
-| Ghanashyam R | 21f1003387 |
-| Jalaj Trivedi | 21f2000730 |
-| Niraj Kumar | 21f1006589 |
-
+## 👥 Contributors  
+- [Ajay Thiagarajan](https://github.com/anujgupta95) 🚀  
 ---
 
-## **Application Link**  
-🌐 **Live Demo:** [Deepseek Portal](https://deepseek.anujg.me)  
-``` 
+## ❓ **Need Help?**  
+Feel free to contribute or reach out if you have any questions! 😊  
+Happy coding! 💻✨
