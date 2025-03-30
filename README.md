@@ -1,57 +1,167 @@
-# 🌟 Deepseek - Seek Portal AI Agent (Backend) 🌟
+# 🌟 Deepseek - Seek Portal AI Agent 🌟  
 
-Welcome to the **Deepseek - Seek Portal AI Agent** frontend repository! 🚀 
+Welcome to **Deepseek - Seek Portal AI Agent**, a powerful AI-driven system that combines **Retrieval-Augmented Generation (RAG)**, **AI-powered interactions**, and a **seamless frontend experience**. 🚀  
 
-📌 **Live Demo:** [Deepseek Portal API](https://api.deepseek.anujg.me)  
-
----
-
-## 🛠️ **Tech Stack**  
-
-| **Category**  | **Technology Used**  |
-|--------------|------------------|
-| **Backend Framework** | Flask (REST API) |
-| **Database** | MongoDB (with PyMongo & MongoEngine) |
-| **Deployment** | Vercel |
-| **APIs** | YouTube Transcript API, GROQ AI API |
+📌 **Live Demo:**  
+🔗 [Frontend Portal](https://deepseek.anujg.me/)  
+🔗 [Backend API](https://api.deepseek.anujg.me)  
 
 ---
 
-## 🚀 **Getting Started**  
+## 🛠️ Tech Stack  
 
-### 🔹 **1. Clone the Repository**  
+| **Category** | **Technology Used** |
+|-------------|------------------|
+| **Frontend** | React, Vite, TailwindCSS, ShadCN, React Router, Google OAuth |
+| **Backend** | Flask (REST API), MongoDB (PyMongo & MongoEngine), Vercel |
+| **RAG & AI** | FastAPI, LangChain, FAISS, Python |
+| **APIs** | YouTube Transcript API, Groq AI API, Google API |
+| **Deployment** | Vercel, Gunicorn, Uvicorn |
+
+---
+
+# 🚀 Getting Started  
+
+## 🔹 1️⃣ Clone the Repository  
+
 ```sh
 git clone https://github.com/21f3002975/seek-portal-ai-agent.git
-cd seek-portal-ai-agent/backend
+cd seek-portal-ai-agent
 ```
 
-### 🔹 **2. Set Up a Virtual Environment**  
+---
+
+# 🔥 Backend Setup (Flask)  
+
+### 2️⃣ Set Up a Virtual Environment  
+
 ```sh
+cd backend
 python3 -m venv venv
-source venv/bin/activate
+source venv/bin/activate  # MacOS/Linux
+venv\Scripts\activate  # Windows
 pip install -r requirements.txt
 ```
 
-### 🔹 **3. Set Up Environment Variables**  
-Create a `.env` file in the root directory and configure:  
+### 3️⃣ Configure Environment Variables  
+
+Create a `.env` file and add:  
+
 ```env
 MONGO_URI=
-RAG_API_URL=
-GROQ_API=
+RAG_API=
+GROQ_API_KEY=
 ```
-Replace with your actual credentials.
 
-### 🔹 **4. Run the Backend Server**  
+### 4️⃣ Run the Backend Server  
+
 ```sh
 python -m api.app
 ```
-📌 Your API will now be live at **`http://localhost:5000/`**.
+
+📌 **API is live at:** `http://localhost:5000/`
 
 ---
 
-## 📦 **Dependencies**  
+# ⚡ Frontend Setup (React + Vite)  
 
-The backend uses the following Python libraries:  
+### 2️⃣ Install Dependencies  
+
+```sh
+cd frontend
+npm install
+```
+
+### 3️⃣ Configure Environment Variables  
+
+Create a `.env` file in the root directory and add:  
+
+```env
+VITE_API_URL=
+VITE_GOOGLE_CLIENT_ID=
+```
+
+### 4️⃣ Start the Frontend Server  
+
+```sh
+npm run dev
+```
+
+📌 **App is live at:** `http://localhost:3000/`
+
+---
+
+# 🤖 RAG & AI Setup (FastAPI + LangChain)  
+
+### 2️⃣ Set Up Virtual Environment  
+
+```sh
+cd rag
+python -m venv venv
+source venv/bin/activate  # MacOS/Linux
+venv\Scripts\activate  # Windows
+```
+
+### 3️⃣ Install Dependencies  
+
+```sh
+pip install -r requirements.txt
+```
+
+### 4️⃣ Configure Environment Variables  
+
+Create a `.env` file and add:  
+
+```env
+GROQ_API_KEY=your_groq_api_key
+GOOGLE_API_KEY=your_google_api_key
+```
+
+### 5️⃣ Run the RAG & AI Server  
+
+```sh
+uvicorn app:app --reload --host 0.0.0.0 --port 8000
+```
+
+📌 **API is live at:** `http://localhost:8000/`
+
+---
+
+# 🔥 API Endpoints  
+
+## 🧠 AI-Powered RAG  
+
+| Endpoint       | Method | Description |
+|---------------|--------|-------------|
+| `/ask`        | POST   | AI-powered query with **graded**, **practice**, or **learning** mode |
+| `/debug/code` | POST   | Python code debugging assistance |
+| `/pdfs`       | GET    | List indexed PDFs |
+
+📌 **Example Request for `/ask`:**  
+
+```json
+{
+  "query": "What is merge sort?",
+  "history": [],
+  "prompt_option": "learning"
+}
+```
+
+📌 **Example Response:**  
+
+```json
+{
+  "response": "Formatted answer with resources...",
+  "updated_history": []
+}
+```
+
+---
+
+# 📦 Dependencies  
+
+### **Backend**  
+
 ```plaintext
 Flask==3.0.0
 Flask-Cors==4.0.0
@@ -67,12 +177,43 @@ python-dotenv==1.0.1
 requests
 ```
 
+### **RAG & AI**  
+
+```plaintext
+FastAPI
+LangChain
+FAISS
+Uvicorn
+```
+
 ---
 
-## 👥 Contributors  
-- [Ajay Thiagarajan](https://github.com/anujgupta95) 🚀  
+# 🚢 Deployment  
+
+### Backend (Flask)  
+```sh
+gunicorn -w 4 -b 0.0.0.0:5000 api.app:app
+```
+
+### RAG & AI (FastAPI)  
+```sh
+uvicorn app:app --host 0.0.0.0 --port 8000
+```
+
 ---
 
-## ❓ **Need Help?**  
-Feel free to contribute or reach out if you have any questions! 😊  
-Happy coding! 💻✨
+# 👥 Contributors  
+
+  - [AJR Vasu](https://github.com/21f3002975) 🚀  
+  - [Ajay Thiagarajan](https://github.com/AjayIITM-Projects) 🚀  
+  - [Anand K Iyer](https://github.com/21f1001185) 🚀  
+  - [Anuj Gupta](https://github.com/anujgupta95) 🚀  
+  - [Jalaj Trivedi](https://github.com/jt232003) 🚀  
+  - [Niraj Kumar](https://github.com/nirajkumar1002) 🚀  
+  - [Ghanashyamn R](https://github.com/ghanashyam-r) 🚀  
+
+---
+
+# 🌟 **"Alone we can do so little; together we can do so much. Our team is not just a group of individuals, but a synergy of talents, passions, and dedication that propels us towards greatness."** 🌟
+
+🚀 **Happy coding!** 💻✨
