@@ -16,7 +16,7 @@ Welcome to **Deepseek - Seek Portal AI Agent**, a powerful AI-driven system that
 | **Backend** | Flask (REST API), MongoDB (PyMongo & MongoEngine), Vercel |
 | **RAG & AI** | FastAPI, LangChain, FAISS, Python |
 | **APIs** | YouTube Transcript API, Groq AI API, Google API |
-| **Deployment** | Vercel, Gunicorn, Uvicorn |
+| **Deployment** | Vercel, Render, Gunicorn, Uvicorn |
 
 ---
 
