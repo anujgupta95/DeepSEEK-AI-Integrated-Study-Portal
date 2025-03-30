@@ -1,23 +1,39 @@
 # Software Engineering Project - AI Agent for SEEK
 
-***Welcome to the Deepseek Portal***
+## **Deepseek Portal**  
 
-**Deepseek Portal** is a cutting-edge **educational platform** designed to enhance learning through AI-driven course assistance, coding execution, and interactive analytics. It provides **user authentication, course management, chatbot support, and real-time learning insights**. Users can enroll in courses, access structured content, submit assignments, and receive AI-powered feedback. Admins and faculty can track user progress, analyze learning patterns, and manage educational content efficiently. The platform features **secure authentication, seamless onboarding, and a chatbot for academic queries**. With **code execution, debugging tools, and automated transcripts**, Deepseek Portal transforms digital learning into an **interactive and data-driven experience**.
+### **Overview**  
+**Deepseek Portal** is a cutting-edge **educational platform** designed to enhance learning through **AI-driven course assistance, coding execution, and interactive analytics**.  
 
+### **Key Features**  
+- **User Authentication** – Secure login and seamless onboarding.  
+- **Course Management** – Enroll in courses, access structured content.  
+- **AI Chatbot** – Get academic assistance in real time.  
+- **Code Execution & Debugging** – Validate and debug assignments efficiently.  
+- **Learning Analytics** – Track user progress and analyze performance.  
+- **Automated Transcripts** – Fetch and process YouTube captions.  
 
-**Instructions to run the app**
-*Creating the virtual environment*
+---
 
+## **Instructions to Run the App**  
+
+### **1. Set Up the Virtual Environment**  
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
-
-*Then after this we will have to run the backend app*
-
+```
+### **2. Run the Backend Application**  
+```bash
 python -m api.app
+```
 
-*Below is the list of libraries used*
+---
 
+## **Libraries Used**  
+The following dependencies are required for the application:  
+
+```plaintext
 Flask==3.0.0
 Flask-Cors==4.0.0
 Flask-RESTful==0.3.10
@@ -30,17 +46,23 @@ gunicorn==21.2.0
 youtube_transcript_api
 python-dotenv==1.0.1
 requests
+```
 
-*Contributors*
+---
 
-1. Ajay Thiagarajan (21f1003242)
-2. AJR Vasu (21f3002975)
-3. Anand K Iyer (21f1001185)
-4. Anuj Gupta (21f3001598)
-5. Ghanashyam R (21f1003387)
-6. Jalaj Trivedi (21f2000730)
-7. Niraj Kumar (21f1006589)
+## **Contributors**  
+| Name | Roll Number |
+|------|------------|
+| Ajay Thiagarajan | 21f1003242 |
+| AJR Vasu | 21f3002975 |
+| Anand K Iyer | 21f1001185 |
+| Anuj Gupta | 21f3001598 |
+| Ghanashyam R | 21f1003387 |
+| Jalaj Trivedi | 21f2000730 |
+| Niraj Kumar | 21f1006589 |
 
-*Application link*
+---
 
-https://deepseek.anujg.me
+## **Application Link**  
+🌐 **Live Demo:** [Deepseek Portal](https://deepseek.anujg.me)  
+``` 
