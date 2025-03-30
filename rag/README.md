@@ -6,6 +6,13 @@ A **Retrieval-Augmented Generation (RAG) system** built with **FastAPI** and **L
 
 ---
 
+## 🌍 Live Demo  
+🔗 [Access the application here](https://rag.deepseek.anujg.me/)  
+
+You can either use the above link to access the portal or follow the steps below to run it locally.
+
+---
+
 ## 🌟 Features  
 
 ✅ **RAG System** – Context-aware responses using **FAISS** vector store  
