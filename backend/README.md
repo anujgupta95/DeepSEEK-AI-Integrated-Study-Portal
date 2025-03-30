@@ -1,78 +1,68 @@
-# 🌟 Deepseek - Seek Portal AI Agent (Backend) 🌟
-
-Welcome to the **Deepseek - Seek Portal AI Agent** frontend repository! 🚀 
-
-📌 **Live Demo:** [Deepseek Portal API](https://api.deepseek.anujg.me)  
-
----
-
-## 🛠️ **Tech Stack**  
-
-| **Category**  | **Technology Used**  |
-|--------------|------------------|
-| **Backend Framework** | Flask (REST API) |
-| **Database** | MongoDB (with PyMongo & MongoEngine) |
-| **Deployment** | Vercel |
-| **APIs** | YouTube Transcript API, GROQ AI API |
-
----
-
-## 🚀 **Getting Started**  
-
-### 🔹 **1. Clone the Repository**  
-```sh
-git clone https://github.com/21f3002975/seek-portal-ai-agent.git
-cd seek-portal-ai-agent/backend
-```
-
-### 🔹 **2. Set Up a Virtual Environment**  
-```sh
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+
+git add .
+git commit -m "message"
+git push origin main
+
+
+git push old-origin main
+git push new-origin main
+
+
+
+# Add the folder to your main repo
+git add backend
+git commit -m "Added backend code"
+git push origin main
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fpython%2Fflask3&demo-title=Flask%203%20%2B%20Vercel&demo-description=Use%20Flask%203%20on%20Vercel%20with%20Serverless%20Functions%20using%20the%20Python%20Runtime.&demo-url=https%3A%2F%2Fflask3-python-template.vercel.app%2F&demo-image=https://assets.vercel.com/image/upload/v1669994156/random/flask.png)
+
+# Flask + Vercel
+
+This example shows how to use Flask 3 on Vercel with Serverless Functions using the [Python Runtime](https://vercel.com/docs/concepts/functions/serverless-functions/runtimes/python).
+
+## Demo
+
+https://flask-python-template.vercel.app/
+
+## How it Works
+
+This example uses the Web Server Gateway Interface (WSGI) with Flask to enable handling requests on Vercel with Serverless Functions.
+
+## Running Locally
+
+```bash
+npm i -g vercel
+vercel dev
 ```
 
-### 🔹 **3. Set Up Environment Variables**  
-Create a `.env` file in the root directory and configure:  
-```env
-MONGO_URI=
-RAG_API=
-GROQ_API_KEY=
-```
-Replace with your actual credentials.
+Your Flask application is now available at `http://localhost:3000`.
 
-### 🔹 **4. Run the Backend Server**  
-```sh
-python -m api.app
-```
-📌 Your API will now be live at **`http://localhost:5000/`**.
+## One-Click Deploy
 
----
+Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_medium=readme&utm_campaign=vercel-examples):
 
-## 📦 **Dependencies**  
-
-The backend uses the following Python libraries:  
-```plaintext
-Flask==3.0.0
-Flask-Cors==4.0.0
-Flask-RESTful==0.3.10
-Flask-Bcrypt==1.0.1
-Flask-JWT-Extended==4.5.3
-Flask-PyMongo==2.3.0
-mongoengine==0.27.0
-pymongo==4.6.1
-gunicorn==21.2.0
-youtube_transcript_api
-python-dotenv==1.0.1
-requests
-```
-
----
-
-## 👥 Contributors  
-- [Ajay Thiagarajan](https://github.com/AjayIITM-Projects) 🚀  
----
-
-## ❓ **Need Help?**  
-Feel free to contribute or reach out if you have any questions! 😊  
-Happy coding! 💻✨
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fexamples%2Ftree%2Fmain%2Fpython%2Fflask3&demo-title=Flask%203%20%2B%20Vercel&demo-description=Use%20Flask%203%20on%20Vercel%20with%20Serverless%20Functions%20using%20the%20Python%20Runtime.&demo-url=https%3A%2F%2Fflask3-python-template.vercel.app%2F&demo-image=https://assets.vercel.com/image/upload/v1669994156/random/flask.png)

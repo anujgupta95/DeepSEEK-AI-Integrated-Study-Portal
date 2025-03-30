@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast"; // Import ShadCN toast
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {Skeleton} from "@/components/ui/skeleton"; // Import Skeleton for loading state
+import { TypeAnimation } from "react-type-animation";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -134,10 +135,26 @@ export default function Registration() {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-gray-100">
+      <TypeAnimation
+        sequence={[
+          "Welcome to the DeepSEEK Portal",
+          1000, // Waits 1s
+          "",
+          () => {
+            console.log("Sequence completed");
+          },
+        ]}
+        wrapper="span"
+        cursor={true}
+        repeat={Infinity}
+        style={{ fontSize: "3.5em", display: "inline-block", fontFamily: "sans-serif", color: "#7D0A0A " }}
+      />
+  
+      {/* ✅ Content Below the Animation */}
       {loading ? (
         /* ✅ Skeleton Loader */
-        <Card className="w-full max-w-lg shadow-lg p-6">
+        <Card className="w-full max-w-lg shadow-lg p-6 mt-6">
           <CardHeader>
             <Skeleton className="h-8 w-3/4 mx-auto" />
           </CardHeader>
@@ -153,7 +170,7 @@ export default function Registration() {
       ) : (
         /* ✅ Show Registration Form Only If User Isn't Registered */
         registeredCourses?.length === 0 && (
-          <Card className="w-full max-w-lg shadow-lg p-6">
+          <Card className="w-full max-w-lg shadow-lg p-6 mt-6">
             <CardHeader>
               <CardTitle className="text-center text-2xl font-bold">Course Registration</CardTitle>
             </CardHeader>
@@ -163,12 +180,12 @@ export default function Registration() {
                   <Label>Full Name</Label>
                   <Input value={profile?.name || ""} disabled />
                 </div>
-
+  
                 <div>
                   <Label>Email</Label>
                   <Input type="email" value={profile?.email || ""} disabled />
                 </div>
-
+  
                 {/* ✅ Multiple Course Selection */}
                 <div>
                   <p className="text-lg font-semibold">Select Courses:</p>
@@ -197,7 +214,7 @@ export default function Registration() {
                     )}
                   </div>
                 </div>
-
+  
                 <Button type="submit" className="w-full">Register</Button>
               </form>
             </CardContent>
@@ -206,4 +223,5 @@ export default function Registration() {
       )}
     </div>
   );
+  
 }

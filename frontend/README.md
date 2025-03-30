@@ -24,8 +24,8 @@ You can either use the above link to access the portal or follow the steps below
 
 ### 1️⃣ Clone the Repository  
 ```sh
-git clone https://github.com/21f3002975/seek-portal-ai-agent.git
-cd seek-portal-ai-agent/frontend
+git clone https://github.com/anujgupta95/SE-Project-FE
+cd SE-Project-FE/frontend
 ```
 
 ### 2️⃣ Install Dependencies  

@@ -87,6 +87,7 @@ export default function CodeEditor({ module, deadline, isGraded }) {
         variant: "default",
         duration: 3000,
       });
+      setShowDebug(false); // Hide debug output after submission
     } catch (error) {
       if (error.response) {
         // Check if the error response has a status code of 400 (bad request)
@@ -213,7 +214,7 @@ export default function CodeEditor({ module, deadline, isGraded }) {
 
       {/* Debug Section */}
       {showDebug && (
-        <div className="mt-4 p-3 bg-green-100 border-l-4 border-green-500 rounded-md">
+        <div className="mt-4 p-3 bg-red-100 border-l-4 border-red-500 rounded-md">
           <p className="text-green-700 text-sm">{debug || "Something went wrong."}</p>
         </div>
       )}

@@ -25,7 +25,7 @@ const teamMembers = [
   },
   {
     name: "AJR Vasu",
-    role: "Scrum Master",
+    role: "Scrum & PM",
     image: Vasu,
     linkedin: "https://www.linkedin.com/in/ajrvasu/",
     email: "21f1001185@ds.study.iitm.ac.in",
@@ -46,14 +46,14 @@ const teamMembers = [
   },
   {
     name: "Jalaj Trivedi",
-    role: "RAG Developer",
+    role: "RAG & AI Developer",
     image: Jalaj,
     linkedin: "www.linkedin.com/in/jalaj-trivedi-961b62221",
     email: "21f2000730@ds.study.iitm.ac.in",
   },
   {
     name: "Niraj Kumar",
-    role: "RAG Developer",
+    role: "RAG & AI Developer",
     image: Niraj,
     linkedin: "www.linkedin.com/in/niraj-kumar123",
     email: "21f1006589@ds.study.iitm.ac.in",

@@ -6,7 +6,7 @@ export default function CourseCard(props) {
     const course = props.course;
     const disableGoToCourse = props.disableGoToCourse;
     return (
-        <Card key={course.id} className="bg-gray-100 text-black flex flex-col h-full max-w-sm" {...props}>
+        <Card key={course.id} className="text-black flex flex-col h-full max-w-sm card-color" {...props}>
             <CardHeader>
               <CardTitle className="text-lg">{course.name}</CardTitle>
               {/* <p className="text-sm text-gray-600">NEW COURSE</p> */}

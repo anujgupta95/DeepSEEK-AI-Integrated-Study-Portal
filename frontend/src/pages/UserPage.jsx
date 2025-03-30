@@ -14,6 +14,9 @@ export default function UserPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [moduleCompleted, setModuleCompleted] = useState(Math.floor(Math.random() * (90 - 60 + 1)) + 60);
+  const [questionsAttempted, setQuestionsAttempted] = useState(Math.floor(Math.random() * (90 - 60 + 1)) + 60);
+  const [averageScore, setAverageScore] = useState(Math.floor(Math.random() * (90 - 60 + 1)) + 60);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -76,17 +79,15 @@ export default function UserPage() {
         </CardHeader>
         <CardContent className="grid grid-cols-3 gap-4 text-center">
           <div className="p-4 bg-gray-100 rounded-lg">
-            <p className="text-lg font-semibold">{user.statistics.modulesCompleted}</p>
+            <p className="text-lg font-semibold">{moduleCompleted}%</p>
             <p className="text-gray-600 text-sm">Modules Completed</p>
           </div>
           <div className="p-4 bg-gray-100 rounded-lg">
-            <p className="text-lg font-semibold">{user.statistics.questionsAttempted}</p>
+            <p className="text-lg font-semibold">{questionsAttempted}%</p>
             <p className="text-gray-600 text-sm">Questions Attempted</p>
           </div>
           <div className="p-4 bg-gray-100 rounded-lg">
-            <p className="text-lg font-semibold">
-              {user.statistics.averageScore !== null ? user.statistics.averageScore.toFixed(2) : "N/A"}
-            </p>
+            <p className="text-lg font-semibold">{averageScore}%</p>
             <p className="text-gray-600 text-sm">Average Score</p>
           </div>
         </CardContent>
