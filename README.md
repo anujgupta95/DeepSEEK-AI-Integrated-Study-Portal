@@ -5,6 +5,7 @@ Welcome to **Deepseek - Seek Portal AI Agent**, a powerful AI-driven system that
 📌 **Live Demo:**  
 🔗 [Frontend Portal](https://deepseek.anujg.me/)  
 🔗 [Backend API](https://api.deepseek.anujg.me)  
+🔗 [RAG API](https://rag.deepseek.anujg.me)  
 
 ---
 
@@ -14,7 +15,7 @@ Welcome to **Deepseek - Seek Portal AI Agent**, a powerful AI-driven system that
 |-------------|------------------|
 | **Frontend** | React, Vite, TailwindCSS, ShadCN, React Router, Google OAuth |
 | **Backend** | Flask (REST API), MongoDB (PyMongo & MongoEngine), Vercel |
-| **RAG & AI** | FastAPI, LangChain, FAISS, Python |
+| **RAG & AI** | FastAPI, LangChain, FAISS, Python, Render |
 | **APIs** | YouTube Transcript API, Groq AI API, Google API |
 | **Deployment** | Vercel, Render, Gunicorn, Uvicorn |
 
@@ -124,81 +125,6 @@ uvicorn app:app --reload --host 0.0.0.0 --port 8000
 ```
 
 📌 **API is live at:** `http://localhost:8000/`
-
----
-
-# 🔥 API Endpoints  
-
-## 🧠 AI-Powered RAG  
-
-| Endpoint       | Method | Description |
-|---------------|--------|-------------|
-| `/ask`        | POST   | AI-powered query with **graded**, **practice**, or **learning** mode |
-| `/debug/code` | POST   | Python code debugging assistance |
-| `/pdfs`       | GET    | List indexed PDFs |
-
-📌 **Example Request for `/ask`:**  
-
-```json
-{
-  "query": "What is merge sort?",
-  "history": [],
-  "prompt_option": "learning"
-}
-```
-
-📌 **Example Response:**  
-
-```json
-{
-  "response": "Formatted answer with resources...",
-  "updated_history": []
-}
-```
-
----
-
-# 📦 Dependencies  
-
-### **Backend**  
-
-```plaintext
-Flask==3.0.0
-Flask-Cors==4.0.0
-Flask-RESTful==0.3.10
-Flask-Bcrypt==1.0.1
-Flask-JWT-Extended==4.5.3
-Flask-PyMongo==2.3.0
-mongoengine==0.27.0
-pymongo==4.6.1
-gunicorn==21.2.0
-youtube_transcript_api
-python-dotenv==1.0.1
-requests
-```
-
-### **RAG & AI**  
-
-```plaintext
-FastAPI
-LangChain
-FAISS
-Uvicorn
-```
-
----
-
-# 🚢 Deployment  
-
-### Backend (Flask)  
-```sh
-gunicorn -w 4 -b 0.0.0.0:5000 api.app:app
-```
-
-### RAG & AI (FastAPI)  
-```sh
-uvicorn app:app --host 0.0.0.0 --port 8000
-```
 
 ---
 
