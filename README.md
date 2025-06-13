@@ -1,4 +1,34 @@
-# 🌟 DeepSEEK - Seek Portal AI Agent 🌟  
+<div align="center">
+     
+# 🧠 DEEPSEEK-AI-INTEGRATED-STUDY-PORTAL
+Empowering Learning Through AI-Driven Insights and Innovation
+
+![Last Commit](https://img.shields.io/badge/last%20commit-march-blue.svg)
+![Python](https://img.shields.io/badge/python-50.5%25-blue.svg)
+![Languages](https://img.shields.io/badge/languages-6-blue.svg)
+
+---
+
+## 🛠️ Built with the tools and technologies:
+![Flask](https://img.shields.io/badge/-Flask-black?logo=flask)
+![FastAPI](https://img.shields.io/badge/-FastAPI-009688?logo=fastapi&logoColor=white)
+![LangChain](https://img.shields.io/badge/-LangChain-2B6CB0?logo=python&logoColor=white)
+![React](https://img.shields.io/badge/-React-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/-Vite-646CFF?logo=vite&logoColor=white)
+![PostCSS](https://img.shields.io/badge/-PostCSS-DD3A0A?logo=postcss)
+![Autoprefixer](https://img.shields.io/badge/-Autoprefixer-DD3735?logo=autoprefixer)
+
+![ESLint](https://img.shields.io/badge/-ESLint-4B32C3?logo=eslint)
+![Axios](https://img.shields.io/badge/-Axios-5A29E4?logo=axios)
+![JSON](https://img.shields.io/badge/-JSON-000?logo=json&logoColor=white)
+![Markdown](https://img.shields.io/badge/-Markdown-000?logo=markdown&logoColor=white)
+![npm](https://img.shields.io/badge/-npm-CB3837?logo=npm)
+![JavaScript](https://img.shields.io/badge/-JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![Python](https://img.shields.io/badge/-Python-3776AB?logo=python&logoColor=white)
+
+---
+</div>
 
 Welcome to **DeepSEEK - Seek Portal AI Agent**, a powerful AI-driven system that combines **Retrieval-Augmented Generation (RAG)**, **AI-powered interactions**, and a **seamless frontend experience**. 🚀  
 
