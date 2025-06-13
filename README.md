@@ -37,6 +37,10 @@ Welcome to **DeepSEEK - Seek Portal AI Agent**, a powerful AI-driven system that
 🔗 [Backend API](https://api.deepseek.anujg.me)  
 🔗 [RAG API](https://rag.deepseek.anujg.me)  
 
+## Project Documents
+
+🔗[Google Drive](https://drive.google.com/drive/folders/149zw3bOh5y702-beNt14ORydM24N04Dr?usp=sharing)
+
 ---
 
 ## 🛠️ Tech Stack  
