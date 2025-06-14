@@ -387,3 +387,7 @@ def get_pdf_list():
     pdf_names = set(doc.metadata.get("source", "Unknown PDF") for doc in all_docs)
     
     return {"pdfs": list(pdf_names)}
+
+@app.get("/")
+def health_check():
+    return {"status": "RAG server is up and running"}
